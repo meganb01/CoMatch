@@ -7,7 +7,8 @@ body {
   height: 100vh;
 }
 
-.register-container {
+.register-container, 
+.login-container {
   background-color: white;
   padding: 30px;
   border-radius: 8px;
