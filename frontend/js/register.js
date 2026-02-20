@@ -1,6 +1,6 @@
 document
   .getElementById("registerForm")
-  .addEventListener("submit", function (e) {
+  .addEventListener("submit", async function (e) {
     e.preventDefault(); //prevents form from reloading page
 
     const email = document.getElementById("email").value.trim();
@@ -21,11 +21,33 @@ document
       alert("Please enter a valid email address.");
       return;
     }
+    if(password.length < 8){
+      alert("Password must be at least 8 characters long.");
+      return;
+    }
 
-    console.log("Email:", email);
-    console.log("Password:", password);
+    try{
+      //Call backend API
+      const response = await fetch("http://localhost:8080/api/auth/register",{
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email : email, password : password}),
+      });
 
-    //TO-DO: Connect to backend API later.
+      const data = await response.json();
 
-    alert("Form Submitted! Check console for values.");
+      if(response.ok){
+        alert("Registration successful!");
+        console.log("Registered user:", data);
+        //Redirect to login page
+        window.location.href = "login.html";
+      }else{
+        //Show error from backend
+        document.getElementById("errorMessage").textContent = data.error || "Registration failed.";
+        console.log("Error response:", data);
+      }
+    }catch(err){
+      console.error("Network or server error", err);
+      alert("Something went wrong. Check console.");
+    }
   });
