@@ -4,10 +4,12 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorDiv = document.getElementById("errorMessage");
+    const successDiv = document.getElementById("successMessage");
 
-    errorDiv.textContent = ""; //Clear previous error messages
+    errorDiv.textContent = ""; 
+    successDiv.textContent = "";
 
-    //Basic client-side validation
+    //Validation
     if(!email){
         errorDiv.textContent = "Email is required!";
         return;
@@ -31,8 +33,11 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             //Save userId and email for session
             sessionStorage.setItem("userId", data.userId);
             sessionStorage.setItem("email", data.email);  
-            //Redirect to dashboard or profile page   
-            window.location.href = "profile.html";        
+            
+            successDiv.textContent = "Login successful! Redirecting...";
+            setTimeout(()=> {
+                window.location.href = "profile.html";
+            }, 1200);
         }else{
             //Show invalid credentials message from the backend
             errorDiv.textContent = data.error || "Login failed. Check credentials.";
