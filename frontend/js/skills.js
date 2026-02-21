@@ -1,3 +1,10 @@
+//Page protection: redirect if not logged in (temporarily commented out to allow testing of skills page first)
+//const userId = sessionStorage.getItem("userId");
+//if(!userId){
+//    alert("You must be logged in to access this page.");
+//    window.location.href = "login.html";
+//}
+
 document.getElementById("skillsForm").addEventListener("submit", function (e){
     e.preventDefault();
 
