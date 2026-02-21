@@ -1,0 +1,80 @@
+.skills-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px; /* slightly wider to fit checkboxes */
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.skills-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.skills-list label {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.skills-list input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.skills-list label:hover {
+  background-color: #f0f8ff;
+  border-color: #007bff;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#errorMessage {
+  color: red;
+  margin-bottom: 10px;
+}
+
+#successMessage {
+  color: green;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+@media(max-width: 480px){
+  .skills-container {
+    padding: 15px;
+  }
+
+  .skills-list {
+    grid-template-columns: 1fr; /* stack checkboxes vertically on small screens */
+  }
+
+  button {
+    font-size: 14px;
+  }
+}
