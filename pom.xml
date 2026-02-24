@@ -47,10 +47,15 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>backend/main/java</sourceDirectory>
+        <testSourceDirectory>backend/test</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>ie.nci.comatchbackend.ComatchBackendApplication</mainClass> 
+                </configuration>
             </plugin>
         </plugins>
     </build>
