@@ -5,7 +5,7 @@
 //    window.location.href = "login.html";
 //}
 
-document.getElementById("skillsForm").addEventListener("submit", function (e){
+document.getElementById("skillsForm").addEventListener("submit", async function (e){
     e.preventDefault();
 
     const checkboxes = document.querySelectorAll(".skills-list input[type='checkbox']");
@@ -30,9 +30,31 @@ document.getElementById("skillsForm").addEventListener("submit", function (e){
         errorDiv.textContent = "Please select at least one skill.";
         return;
     }
-    
-    console.log("Selected skills:", selectedSkills);
-    successDiv.textContent = "Skills saved successfully!";
 
-    //To do later: send selectedSkills to backend via fetch 
+    const userId = sessionStorage.getItem("userId");
+    if(!userId){
+        errorDiv.textContent = "You must be logged in to save skills.";
+        return;
+    }
+
+    try{
+        const response = await fetch(`http://localhost:8080/api/users/${userId}/skills`,{
+            method: "POST",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify({skills: selectedSkills})
+        });
+
+        const data = await response.json();
+
+        if(response.ok){
+            successDiv.textContent = "Skills saved successfully!";
+            console.log("Saved skills:", data);
+        }else{
+            errorDiv.textContent = data.error || "Failed to save skills.";
+        }
+    }catch(err){
+        console.error("Network/server error:", err);
+        errorDiv.textContent = "Something went wrong. Check console.";
+    }
 });
+    
