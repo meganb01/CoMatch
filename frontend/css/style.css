@@ -1,0 +1,120 @@
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input,
+button {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 8px 0;
+    font-size: 16px;
+    border-radius: 4px;
+    }
+
+input {
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#errorMessage {
+    color: red;
+    margin-top: 10px;
+}
+
+#successMessage {
+    color: green;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Container Styles */
+.register-container,
+.login-container,
+.skills-container,
+.profile-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px; 
+}
+
+.skills-container {
+    max-width: 500px;
+}
+
+/* Skills Page Specific */
+.skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.skills-list label {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.skills-list input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.skills-list label:hover {
+    background-color: #f0f8ff;
+    border-color: #007bff;
+}
+
+/* Responsive */
+@media(max-width: 480px) {
+.register-container,
+.login-container,
+.skills-container {
+    padding: 15px;
+}
+
+input,
+button {
+    font-size: 14px;
+}
+
+.skills-list {
+    grid-template-columns: 1fr;
+}
+}
