@@ -1,227 +1,273 @@
-// profilE.js
+// profile.js (complete, merged)
+// Configure API 
+const API_BASE = ""; //  "http://localhost:8080"
+const PROFILE_GET = API_BASE ? API_BASE + "/api/profile/me" : "";
+const PROFILE_PUT = API_BASE ? API_BASE + "/api/profile" : "";
+const TOKEN_KEY = "cm_token"; // need change later
 
-// To Configure endpoints / token key to match app:
-const API_BASE = ""; // e.g. "http://localhost:8080"
-const PROFILE_GET = API_BASE + "/api/profile/me";
-const PROFILE_PUT = API_BASE + "/api/profile"; // ex,
-const TOKEN_KEY = "cm_token"; // change if  auth uses a different key
+// DOM elements (support both naming patterns you might have)
+const viewMode = document.getElementById("viewMode");
+const editMode = document.getElementById("editMode");
 
-// Elements
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview");
-const fullNameEl = document.getElementById("fullName");
-const countryEl = document.getElementById("country");
-const sectorEl = document.getElementById("sector");
-const skillInput = document.getElementById("skillInput");
-const skillsContainer = document.getElementById("skillsContainer");
-const bioEl = document.getElementById("bio");
-const bioCount = document.getElementById("bioCount");
-const profileForm = document.getElementById("profileForm");
-const messageEl = document.getElementById("message");
+const editBtn = document.getElementById("editBtn") || document.querySelector(".edit-btn");
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// local state
-let skills = [];
+// View elements
+const viewAvatar = document.getElementById("viewAvatar") || document.getElementById("viewAvatarImg");
+const viewName = document.getElementById("viewName");
+const viewCountry = document.getElementById("viewCountry");
+const viewSector = document.getElementById("viewSector");
+const viewSkills = document.getElementById("viewSkills");
+const viewBio = document.getElementById("viewBio");
+
+// Edit elements / form
+const avatarInput = document.getElementById("avatarInput");
+const avatarPreview = document.getElementById("avatarPreview") || document.getElementById("editAvatarPreview");
+const nameInput = document.getElementById("nameInput");
+const countryInput = document.getElementById("countryInput");
+const sectorInput = document.getElementById("sectorInput");
+const skillsInput = document.getElementById("skillsInput");
+const skillsContainer = document.getElementById("skillsContainer"); // optional enhanced tag UI
+const bioInput = document.getElementById("bioInput");
+const bioCount = document.getElementById("bioCount");
+
 let avatarFile = null;
+let skills = [];
 
-// helper: escape
-function escapeHtml(s){ if(!s) return ""; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Helpers
+const qs = id => document.getElementById(id);
+const escapeHtml = s => (s == null ? "" : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
 
-// preview image when user chooses file
-avatarInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  if(file.size > 5 * 1024 * 1024){
-    showMessage("Image too large (max 5MB).", true);
-    avatarInput.value = "";
-    return;
-  }
-  avatarFile = file;
-  const url = URL.createObjectURL(file);
-  avatarPreview.src = url;
-});
-
-// add skill on Enter or comma
-skillInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter" || e.key === ","){
-    e.preventDefault();
-    addSkillFromInput();
-  } else if(e.key === "Backspace" && skillInput.value === ""){
-    // remove last
-    skills.pop();
-    renderSkills();
-  }
-});
-
-function addSkillFromInput(){
-  const v = skillInput.value.trim().replace(/,+$/,'');
-  if(!v) return;
-  if(!skills.includes(v)){
-    skills.push(v);
-    renderSkills();
-  }
-  skillInput.value = "";
+// UI toggles
+function showEditMode(){
+  if (viewMode) viewMode.classList.add("hidden");
+  if (editMode) editMode.classList.remove("hidden");
+}
+function showViewMode(){
+  if (editMode) editMode.classList.add("hidden");
+  if (viewMode) viewMode.classList.remove("hidden");
 }
 
-// render skill tags
-function renderSkills(){
-  skillsContainer.innerHTML = "";
-  for(const s of skills){
-    const tag = document.createElement("span");
-    tag.className = "tag";
-    tag.innerHTML = `${escapeHtml(s)} <button aria-label="Remove ${escapeHtml(s)}">✕</button>`;
-    const btn = tag.querySelector("button");
-    btn.addEventListener("click", () => {
-      skills = skills.filter(x => x !== s);
-      renderSkills();
-    });
-    skillsContainer.appendChild(tag);
-  }
-}
-
-// bio counter
-bioEl.addEventListener("input", () => {
-  bioCount.textContent = `${bioEl.value.length}/100`;
-});
-
-// show message
-function showMessage(msg, isError=false){
-  messageEl.textContent = msg;
-  messageEl.style.color = isError ? "#ffb3b3" : "var(--muted)";
-}
-
-// load current profile (fallback if no token / server)
-async function loadProfile(){
-  showMessage("Loading profile...");
-  const token = localStorage.getItem(TOKEN_KEY);
-  if(!token){
-    showMessage("No token found — loading mock data. (Log in to load real profile.)");
-    loadMock();
-    return;
-  }
-
-  try {
-    const res = await fetch(PROFILE_GET, {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    if(!res.ok){
-      showMessage("Failed to load profile from server. Loading mock data.");
-      loadMock();
+// Avatar preview handler
+if (avatarInput) {
+  avatarInput.addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) {
+      alert("Image too large (max 5MB).");
+      avatarInput.value = "";
       return;
     }
-    const json = await res.json();
-    const user = json.user || json;
-    populateForm(user);
-    showMessage("Profile loaded.");
-  } catch(err){
-    console.error(err);
-    showMessage("Network error — loading mock data.");
-    loadMock();
+    avatarFile = f;
+    const url = URL.createObjectURL(f);
+    if (avatarPreview) avatarPreview.src = url;
+    if (viewAvatar) viewAvatar.src = url;
+  });
+}
+
+// Skills input: support comma-separated input when saving, and optional "Enter" behavior
+if (skillsInput) {
+  skillsInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addSkillFromInput();
+    } else if (e.key === "Backspace" && skillsInput.value.trim() === "") {
+      skills.pop();
+      renderSkillsEdit();
+    }
+  });
+}
+
+function addSkillFromInput(){
+  if (!skillsInput) return;
+  const raw = skillsInput.value.trim().replace(/,+$/,'');
+  if (!raw) return;
+  const parts = raw.split(",").map(s => s.trim()).filter(Boolean);
+  for (const p of parts) {
+    if (!skills.includes(p)) skills.push(p);
+  }
+  skillsInput.value = "";
+  renderSkillsEdit();
+}
+
+function renderSkillsEdit(){
+  if (!skillsContainer) return;
+  skillsContainer.innerHTML = "";
+  for (const s of skills) {
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.innerHTML = `${escapeHtml(s)} <button type="button" aria-label="Remove ${escapeHtml(s)}">✕</button>`;
+    const btn = span.querySelector("button");
+    btn.addEventListener("click", () => {
+      skills = skills.filter(x => x !== s);
+      renderSkillsEdit();
+    });
+    skillsContainer.appendChild(span);
   }
 }
 
-// mock user if backend not available
-function loadMock(){
+function renderSkillsView(){
+  if (!viewSkills) return;
+  viewSkills.innerHTML = "";
+  for (const s of skills) {
+    const span = document.createElement("span");
+    span.className = "skill";
+    span.textContent = s;
+    viewSkills.appendChild(span);
+  }
+}
+
+// Bio counter
+if (bioInput && bioCount) {
+  bioCount.textContent = `${bioInput.value.length}/100`;
+  bioInput.addEventListener("input", () => {
+    bioCount.textContent = `${bioInput.value.length}/100`;
+  });
+}
+
+// Populate both view and edit from a user object
+function populateFormAndView(u){
+  const user = u || {};
+  if (nameInput) nameInput.value = user.name || "";
+  if (countryInput) countryInput.value = user.country || "";
+  if (sectorInput) sectorInput.value = user.sector || "";
+  if (bioInput) bioInput.value = user.bio || "";
+  if (bioCount) bioCount.textContent = `${(bioInput && bioInput.value.length) || 0}/100`;
+
+  skills = Array.isArray(user.skills) ? user.skills.slice() :
+           (typeof user.skills === "string" ? user.skills.split(",").map(s => s.trim()).filter(Boolean) : []);
+  if (skillsInput && skillsInput.value.trim() === "") skillsInput.value = skills.join(", ");
+
+  if (avatarPreview && user.avatarUrl) avatarPreview.src = user.avatarUrl;
+  if (viewAvatar && user.avatarUrl) viewAvatar.src = user.avatarUrl;
+
+  // view side
+  if (viewName) viewName.textContent = user.name || "No name";
+  if (viewCountry) viewCountry.textContent = user.country || "";
+  if (viewSector) viewSector.textContent = user.sector || "";
+  if (viewBio) viewBio.textContent = user.bio || "";
+  renderSkillsEdit();
+  renderSkillsView();
+}
+
+// Load profile: try token/backend or fallback to local mock
+async function loadProfile(){
+  // try localStorage saved profile first
+  const saved = localStorage.getItem("mock_profile");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      populateFormAndView(parsed);
+      return;
+    } catch(e) { /* ignore parse errors */ }
+  }
+
+  // If API configured and token exists, attempt fetch
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (API_BASE && token) {
+    try {
+      const res = await fetch(PROFILE_GET, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const user = json.user || json;
+        populateFormAndView(user);
+        return;
+      }
+    } catch (err) {
+      console.warn("Profile fetch failed:", err);
+    }
+  }
+
+  // fallback mock
   const mock = {
     name: "Alex Chen",
     country: "Ireland",
     sector: "Tech, AI",
     skills: ["Product Management", "Marketing"],
-    bio: "Looking for a technical co-founder."
+    bio: "Looking for a technical co-founder.",
+    avatarUrl: "https://i.pravatar.cc/150?img=12"
   };
-  populateForm(mock);
+  populateFormAndView(mock);
 }
 
-// fill form fields
-function populateForm(u){
-  fullNameEl.value = u.name || "";
-  countryEl.value = u.country || "";
-  sectorEl.value = u.sector || "";
-  skills = Array.isArray(u.skills) ? u.skills.slice() : (u.skills ? u.skills.split(",").map(s => s.trim()).filter(Boolean) : []);
-  bioEl.value = u.bio || "";
-  bioCount.textContent = `${bioEl.value.length}/100`;
-  renderSkills();
-  if(u.avatarUrl) avatarPreview.src = u.avatarUrl;
-}
-
-// submit handlersend to backend (FormData for file)
-profileForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  saveBtn.disabled = true;
-  showMessage("Saving...");
-  // simple client-side validation
-  if(!fullNameEl.value.trim()){
-    showMessage("Full name is required.", true);
-    saveBtn.disabled = false;
+// Save handler: update view and persist locally or send to API
+async function saveProfile(){
+  // simple validation
+  const name = (nameInput && nameInput.value.trim()) || "";
+  if (!name) {
+    alert("Name is required.");
     return;
   }
 
-  // prepare data
-  // We'll use FormData so we can include image file if there is one
-  const fd = new FormData();
-  fd.append("name", fullNameEl.value.trim());
-  fd.append("country", countryEl.value);
-  fd.append("sector", sectorEl.value);
-  fd.append("bio", bioEl.value);
-  fd.append("skills", JSON.stringify(skills));
-  if(avatarFile) fd.append("avatar", avatarFile);
+  const payload = {
+    name,
+    country: (countryInput && countryInput.value) || "",
+    sector: (sectorInput && sectorInput.value) || "",
+    skills,
+    bio: (bioInput && bioInput.value) || "",
+    avatarUrl: null
+  };
 
+  // if avatarFile exists and API accepts multipart, send FormData; otherwise persist locally
   const token = localStorage.getItem(TOKEN_KEY);
+  if (API_BASE && token) {
+    // attempt multipart PUT
+    try {
+      const form = new FormData();
+      form.append("name", payload.name);
+      form.append("country", payload.country);
+      form.append("sector", payload.sector);
+      form.append("bio", payload.bio);
+      form.append("skills", JSON.stringify(payload.skills));
+      if (avatarFile) form.append("avatar", avatarFile);
 
-  // If token missing, save to localStorage as mock
-  if(!token){
-    // mock save locally so you can test
-    localStorage.setItem("mock_profile", JSON.stringify({
-      name: fullNameEl.value.trim(),
-      country: countryEl.value,
-      sector: sectorEl.value,
-      skills,
-      bio: bioEl.value,
-      avatarUrl: avatarPreview.src,
-      savedAt: new Date().toISOString()
-    }));
-    showMessage("No token — profile saved locally (mock).");
-    saveBtn.disabled = false;
-    return;
-  }
+      const res = await fetch(PROFILE_PUT, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + token },
+        body: form
+      });
 
-  try {
-    const res = await fetch(PROFILE_PUT, {
-      method: "PUT",
-      headers: {
-        // NOTE: do NOT set content-type for FormData; browser will set boundary automatically
-        "Authorization": "Bearer " + token
-      },
-      body: fd
-    });
-
-    if(!res.ok){
-      const text = await res.text();
-      console.error("Failed update:", res.status, text);
-      showMessage("Save failed: " + res.statusText, true);
-      saveBtn.disabled = false;
+      if (!res.ok) {
+        alert("Save failed: " + res.statusText);
+        return;
+      }
+      const data = await res.json();
+      // update view with response if provided
+      populateFormAndView(data.user || data);
+      showViewMode();
+      alert("Profile saved.");
       return;
+    } catch (err) {
+      console.error("Save failed", err);
+      alert("Network error while saving. Saved locally instead.");
     }
-
-    const json = await res.json();
-    showMessage("Profile saved successfully.");
-   
-    if(json.avatarUrl) avatarPreview.src = json.avatarUrl;
-  } catch(err){
-    console.error(err);
-    showMessage("Network error while saving.", true);
-  } finally {
-    saveBtn.disabled = false;
   }
-});
 
-cancelBtn.addEventListener("click", (e) => {
-  // reload originaldata (or navigate away)
-  loadProfile();
-});
+  // Local save fallback
+  // Use current avatarPreview src if file not uploaded to backend
+  payload.avatarUrl = (avatarPreview && avatarPreview.src) || (viewAvatar && viewAvatar.src) || "";
+  localStorage.setItem("mock_profile", JSON.stringify(payload));
+  populateFormAndView(payload);
+  showViewMode();
+  alert("Profile saved locally.");
+}
 
-// init
+// Event wiring (defensive: check elements exist)
 document.addEventListener("DOMContentLoaded", () => {
+  // load profile data to page
   loadProfile();
+
+  if (editBtn) editBtn.addEventListener("click", showEditMode);
+  if (saveBtn) saveBtn.addEventListener("click", (e) => { e.preventDefault(); saveProfile(); });
+  if (cancelBtn) cancelBtn.addEventListener("click", (e) => { e.preventDefault(); showViewMode(); loadProfile(); });
+  if (logoutBtn) logoutBtn.addEventListener("click", () => {
+    // logout behaviour (frontend-only)
+    localStorage.removeItem(TOKEN_KEY);
+    alert("Logged out");
+    // optionally redirect: location.href = "/login.html";
+  });
 });

@@ -1,68 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CoMatch — Edit Profile</title>
+  <meta charset="UTF-8" />
+  <title>Profile</title>
   <link rel="stylesheet" href="profile.css" />
 </head>
 <body>
-  <main class="profile-page">
-    <div class="profile-card">
-      <h2 class="title">Edit Profile</h2>
 
-      <!-- Photo upload -->
-      <div class="photo-row">
-        <div class="avatar-wrap">
-          <img id="avatarPreview" class="avatar" src="https://i.pravatar.cc/150?img=12" alt="avatar preview"/>
-        </div>
-        <div class="photo-controls">
-          <label class="upload-btn" for="avatarInput">Upload Photo</label>
-          <input id="avatarInput" type="file" accept="image/*" style="display:none" />
-          <p class="muted">Square image recommended. Max 5MB.</p>
-        </div>
-      </div>
+<div class="profile-page">
 
-      <form id="profileForm" class="profile-form" novalidate>
-        <label class="form-label">Full Name
-          <input id="fullName" name="name" type="text" placeholder="e.g., Alex Chen" required />
-        </label>
+  <!-- PROFILE VIEW -->
+  <section id="viewMode" class="profile-card">
+    <img id="viewAvatar" class="avatar" src="https://i.pravatar.cc/150?img=12" />
 
-        <label class="form-label">Country
-          <select id="country" name="country" required>
-            <option value="">Select your country</option>
-            <option>Ireland</option>
-            <option>United Kingdom</option>
-            <option>United States</option>
-            <option>Morocco</option>
-            <option>India</option>
-            <!-- Will add more -->
-          </select>
-        </label>
+    <h1 id="viewName">Alex Chen</h1>
+    <p id="viewCountry">Ireland</p>
+    <p id="viewSector">Tech, AI</p>
 
-        <label class="form-label">Sector
-          <input id="sector" name="sector" type="text" placeholder="e.g., Tech, AI, Health"/>
-        </label>
-
-        <label class="form-label">Skills
-          <div id="skillsContainer" class="skills-container" aria-live="polite"></div>
-          <input id="skillInput" type="text" placeholder="e.g., Fundraising , press Enter or comma to add" />
-        </label>
-
-        <label class="form-label bio-label">Short Bio <span id="bioCount">0/100</span>
-          <textarea id="bio" name="bio" maxlength="100" placeholder="Tell us a bit about yourself (max 100 characters)"></textarea>
-        </label>
-
-        <div class="form-actions">
-          <button id="saveBtn" class="btn btn-primary" type="submit">Save Profile</button>
-          <button id="cancelBtn" class="btn btn-ghost" type="button">Cancel</button>
-        </div>
-
-        <div id="message" role="status" aria-live="polite"></div>
-      </form>
+    <div id="viewSkills" class="skills">
+      <span class="skill">Product Management</span>
+      <span class="skill">Marketing</span>
     </div>
-  </main>
 
-  <script src="profile.js"></script>
+    <p id="viewBio" class="bio">
+      Looking for a technical co-founder.
+    </p>
+
+    <button id="editBtn" class="primary-btn">Edit Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </section>
+
+  <!--PROFILE EDIT -->
+  <section id="editMode" class="profile-card hidden">
+
+    <h2>Edit Profile</h2>
+
+    <!-- Avatar Upload -->
+<div class="avatar-edit">
+  <img id="editAvatar" class="avatar" src="https://i.pravatar.cc/150?img=12" />
+  <label for="avatarInput" class="change-photo">Change photo</label>
+  <input type="file" id="avatarInput" accept="image/*" hidden />
+</div>
+
+    <label>Full Name</label>
+    <input id="nameInput" value="Alex Chen" />
+
+    <label>Country</label>
+    <input id="countryInput" value="Ireland" />
+
+    <label>Sector</label>
+    <input id="sectorInput" value="Tech, AI" />
+
+    <label>Skills (comma separated)</label>
+    <input id="skillsInput" value="Product Management, Marketing" />
+
+    <label>Short Bio</label>
+    <textarea id="bioInput" maxlength="100">Looking for a technical co-founder.</textarea>
+
+    <div class="actions">
+      <button id="saveBtn" class="primary-btn">Save</button>
+      <button id="cancelBtn" class="secondary-btn">Cancel</button>
+    </div>
+
+  </section>
+
+</div>
+
+
+
+<script src="profile.js"></script>
 </body>
 </html>
