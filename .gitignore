@@ -1,0 +1,19 @@
+# Ignore compiled Java class files
+*.class
+
+# Ignore the target/ directory 
+target/
+
+# Ignore .lst files 
+*.lst
+
+# Ignore IDE files 
+.idea/
+.vscode/
+
+# Ignore log files
+*.log
+
+# Ignore temporary files created by the system 
+.DS_Store
+Thumbs.db
