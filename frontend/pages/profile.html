@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile</title>
+  <link rel="stylesheet" href="../css/global.css" />
+</head>
+<body>
+
+<div class="profile-page">
+
+  <!-- PROFILE VIEW -->
+  <section id="viewMode" class="profile-card">
+    <img id="viewAvatar" class="avatar" src="https://i.pravatar.cc/150?img=12" />
+
+    <h1 id="viewName">Alex Chen</h1>
+    <p id="viewCountry">Ireland</p>
+    <p id="viewSector">Tech, AI</p>
+
+    <div id="viewSkills" class="skills">
+      <span class="skill">Product Management</span>
+      <span class="skill">Marketing</span>
+    </div>
+
+    <p id="viewBio" class="bio">
+      Looking for a technical co-founder.
+    </p>
+
+    <button id="editBtn" class="primary-btn">Edit Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </section>
+
+  <!--PROFILE EDIT -->
+  <section id="editMode" class="profile-card hidden">
+
+    <h2>Edit Profile</h2>
+
+    <!-- Avatar Upload -->
+<div class="avatar-edit">
+  <img id="editAvatar" class="avatar" src="https://i.pravatar.cc/150?img=12" />
+  <label for="avatarInput" class="change-photo">Change photo</label>
+  <input type="file" id="avatarInput" accept="image/*" hidden />
+</div>
+
+    <label>Full Name</label>
+    <input id="nameInput" value="Alex Chen" />
+
+    <label>Country</label>
+    <input id="countryInput" value="Ireland" />
+
+    <label>Sector</label>
+    <input id="sectorInput" value="Tech, AI" />
+
+    <label>Select Your Skills</label>
+    <div id ="skillsContainer" class="skills-list">
+      <!--tags rendered here by JS-->
+    </div>
+    
+
+    <label>Short Bio</label>
+    <textarea id="bioInput" maxlength="100">Looking for a technical co-founder.</textarea>
+
+    <div class="actions">
+      <button id="saveBtn" class="primary-btn">Save</button>
+      <button id="cancelBtn" class="secondary-btn">Cancel</button>
+    </div>
+
+  </section>
+
+</div>
+
+
+
+<script src="profile.js"></script>
+</body>
+</html>
