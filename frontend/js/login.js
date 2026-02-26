@@ -26,14 +26,14 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             body: JSON.stringify({email, password}),
         });
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
 
         if(response.ok){
             console.log("Logged in:", data);
-            //Save userId and email for session
             sessionStorage.setItem("userId", data.userId);
-            sessionStorage.setItem("email", data.email);  
-            
+            sessionStorage.setItem("email", data.email);
+            if (data.token) localStorage.setItem("cm_token", data.token);
+
             successDiv.textContent = "Login successful! Redirecting...";
             setTimeout(()=> {
                 window.location.href = "profile.html";

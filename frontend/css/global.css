@@ -45,8 +45,66 @@ body{
   gap: 16px;
 }
 
-
-
+/* Landing page (home): Login / Register options */
+.landing-card {
+  background: var(--panel);
+  padding: 48px;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 95%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  text-align: center;
+}
+.landing-card h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+.landing-card .landing-tagline {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.landing-card .landing-desc {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+.landing-card p {
+  color: var(--muted);
+  margin: 0;
+}
+.landing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.landing-actions a {
+  display: block;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+.landing-actions a:hover {
+  opacity: 0.9;
+}
+.landing-actions .btn-login {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+.landing-actions .btn-register {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+}
 
 .register-container input,
 .register-container textarea,
