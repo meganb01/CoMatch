@@ -1,0 +1,406 @@
+:root{
+  --bg: #07112a;
+  --panel: #0f1a36;
+  --accent: #6b4bff;
+  --accent-2: #2a7cff;
+  --text: #e8eef9;
+  --muted: #9aa7c7;
+  --radius: 12px;
+}
+
+*{box-sizing:border-box}
+
+/* Body base styles */
+body{
+  margin: 0;
+  font-family: Inter, Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg), #041021);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Wrapper for auth & skills pages */
+.auth-wrapper{
+  min-height: 100vh;            
+  display: flex;
+  align-items: center;          
+  justify-content: center;     
+  background-color: var(--bg);  
+  padding: 20px;
+}
+
+.register-container,
+.login-container,
+.skills-container{
+  background: var(--panel);
+ 
+  padding: 40px;                
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 95%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+
+
+.register-container input,
+.register-container textarea,
+.register-container select,
+.login-container input,
+.login-container textarea,
+.login-container select,
+.skills-container input,
+.skills-container textarea,
+.skills-container select{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.register-container input:focus,
+.register-container textarea:focus,
+.register-container select:focus,
+.login-container input:focus,
+.login-container textarea:focus,
+.login-container select:focus,
+.skills-container input:focus,
+.skills-container textarea:focus,
+.skills-container select:focus{
+  border-color: var(--accent);
+}
+
+/*Profile page styling */
+.profile-page{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+}
+
+.profile-card{
+  width:100%;
+  max-width:760px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+  border-radius: var(--radius);
+  padding:18px;
+  border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.title{
+  margin:0 0 12px 0;
+  font-size:1.15rem;
+}
+
+/* Photo Row */
+.photo-row{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.avatar-wrap{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg,#0b1230,#081028);
+}
+.avatar{ width:100%; height:100%; object-fit:cover; display:block; }
+.upload-btn{
+  display:inline-block;
+  padding:8px 14px;
+  background: linear-gradient(90deg,var(--accent), var(--accent-2));
+  color:#fff;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.muted{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+/* Form */
+.profile-form{ display:flex; flex-direction:column; gap:12px; margin-top:6px; }
+.form-label{ display:block; font-size:13px; color:var(--muted); }
+.form-label input[type="text"],
+.form-label select,
+.form-label textarea,
+#skillInput {
+  margin-top:6px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color:var(--text);
+  outline:none;
+  font-size:14px;
+}
+
+textarea { min-height:100px; resize:vertical; }
+
+/* Skills tags */
+.tag {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  padding:6px 10px;
+  border-radius:18px;
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  color:var(--text);
+  font-size:13px;
+}
+.tag button{ background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:0; }
+
+/* Skills list container */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;   
+  gap: 12px;             
+  margin-top: 12px;
+}
+
+/* Individual skill tag*/
+.skills-list .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* Hide the default checkbox */
+.skills-list .tag input[type="checkbox"] {
+  display: none;
+}
+
+.skills-list .tag:hover {
+  background: rgba(91,124,250,0.1);
+  border-color: var(--accent);
+}
+
+/* Checked/selected state */
+.skills-list .tag input[type="checkbox"]:checked + span {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+
+/* Make the span fill the tag area for consistent spacing */
+.skills-list .tag span {
+  display: inline-block;
+  pointer-events: none; 
+}
+
+@media (max-width: 640px) {
+  .skills-list {
+    justify-content: center; 
+  }
+  .skills-list .tag {
+    flex: 1 1 calc(50% - 12px); 
+    max-width: calc(50% - 12px);
+  }
+}
+
+/* Actions */
+.form-actions{ display:flex; gap:10px; margin-top:6px; }
+.btn{ padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn-primary{ background: linear-gradient(90deg,var(--accent), var(--accent-2)); color:#fff;}
+.btn-ghost{ background: rgba(255,255,255,0.02); color:var(--muted);}
+
+/* Message */
+#message{ margin-top:8px; font-size:14px; color:var(--muted); }
+
+/* responsive */
+@media (max-width:640px){
+  .photo-row{ flex-direction:row; gap:12px; align-items:flex-start; }
+  .profile-card{ padding:14px; }
+}
+
+.hidden {
+  display: none;
+}
+
+button,
+.primary-btn {
+  background: #5b7cfa;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.skills {
+  margin: 12px 0;
+}
+
+.skill {
+  display: inline-block;
+  background: #16224d;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Avatar size + circular */
+.avatar, #avatarPreview, #viewAvatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Edit mode card styling */
+#editMode {
+  background: #0e1629;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  animation: fadeIn 0.25s ease;
+}
+
+#editMode h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+  color: #ffffff;
+}
+
+#editMode label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #9fb2ff;
+}
+
+#editMode input,
+#editMode textarea,
+#editMode select {
+  width: 100%;
+  background: #101c3d;
+  border: 1px solid #1e2b5c;
+  color: white;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+#editMode input:focus,
+#editMode textarea:focus,
+#editMode select:focus {
+  border-color: #5b7cfa;
+}
+
+#editMode textarea {
+  resize: none;
+  min-height: 90px;
+}
+
+#editMode input + label,
+#editMode select + label {
+  margin-top: 18px;
+}
+
+#editMode .actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Smooth entry */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== LOGOUT (INSIDE CARD) =====
+   This styles both the element with id="logoutBtn" and elements
+   with class="logout-btn" so it works with either markup.
+*/
+.logout-btn,
+#logoutBtn {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid rgba(255,107,107,0.12);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.logout-btn:hover,
+#logoutBtn:hover {
+  background: rgba(255,107,107,0.06);
+}
+
+.avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.change-photo {
+  font-size: 14px;
+  color: #3b82f6;
+  cursor: pointer;
+}
