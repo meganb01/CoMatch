@@ -86,10 +86,14 @@ function addSkillFromInput(){
   if (!raw) return;
   const parts = raw.split(",").map(s => s.trim()).filter(Boolean);
   for (const p of parts) {
-    if (!skills.includes(p)) skills.push(p);
-  }
-  skillsInput.value = "";
-  renderSkillsEdit();
+    if (skills.length >= 10) {
+      alert("Maximum 10 skills allowed");
+      break;
+    }
+      if (!skills.includes(p)) skills.push(p);
+    }
+    skillsInput.value = "";
+   renderSkillsEdit();
 }
 
 const ALL_SKILLS = [
@@ -116,8 +120,16 @@ function renderSkillsEdit() {
     span.textContent = skill;
 
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked && !skills.includes(skill)) skills.push(skill);
-      else if (!checkbox.checked) skills = skills.filter(s => s !== skill);
+      if (checkbox.checked) {
+        if (skills.length >= 10) {
+          alert("Maximum 10 skills allowed");
+          checkbox.checked = false; // undo the check
+          return;
+        }
+        if (!skills.includes(skill)) skills.push(skill);
+      } else {
+        skills = skills.filter(s => s !== skill);
+      }
       renderSkillsView();
     });
 
