@@ -13,15 +13,18 @@
   <section id="viewMode" class="profile-card">
     <img id="viewAvatar" class="avatar" src="https://i.pravatar.cc/150?img=12" />
 
-    <h1 id="viewName"></h1>
-    <p id="viewCountry"></p>
-    <p id="viewSector"></p>
+    <h1 id="viewName">Alex Chen</h1>
+    <p id="viewCountry">Ireland</p>
+    <p id="viewSector">Tech, AI</p>
 
     <div id="viewSkills" class="skills">
-      <!-- filled by JS from profile -->
+      <span class="skill">Product Management</span>
+      <span class="skill">Marketing</span>
     </div>
 
-    <p id="viewBio" class="bio"></p>
+    <p id="viewBio" class="bio">
+      Looking for a technical co-founder.
+    </p>
 
     <button id="editBtn" class="primary-btn">Edit Profile</button>
     <button id="logoutBtn">Logout</button>
@@ -40,13 +43,13 @@
 </div>
 
     <label>Full Name</label>
-    <input id="nameInput" placeholder="Your name" />
+    <input id="nameInput" value="Alex Chen" />
 
     <label>Country</label>
-    <input id="countryInput" placeholder="Country" />
+    <input id="countryInput" value="Ireland" />
 
     <label>Sector</label>
-    <input id="sectorInput" placeholder="e.g. Tech, AI" />
+    <input id="sectorInput" value="Tech, AI" />
 
     <label>Select Your Skills</label>
     <div id ="skillsContainer" class="skills-list">
@@ -55,7 +58,7 @@
     
 
     <label>Short Bio</label>
-    <textarea id="bioInput" maxlength="100" placeholder="A short bio about you"></textarea>
+    <textarea id="bioInput" maxlength="100">Looking for a technical co-founder.</textarea>
 
     <div class="actions">
       <button id="saveBtn" class="primary-btn">Save</button>
