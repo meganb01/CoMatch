@@ -301,4 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Logged out");
     window.location.href = "login.html";
   });
+
+  // ===== DISCOVER BUTTON =====
+  const discoverBtn = document.getElementById("discoverBtn");
+  if (discoverBtn) {
+    discoverBtn.addEventListener("click", () => {
+      window.location.href = "discover.html";
+    });
+  }
 });
