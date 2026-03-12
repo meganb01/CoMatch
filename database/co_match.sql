@@ -14,9 +14,6 @@ create table users(
     created_at timestamp default current_timestamp -- Account creation time
 );
 
--- Index on email to improve login performance
-create index idx_users_email on users(email);
-
 -- user profile table (Profile info)
 -- Stores public profile information
 -- One-to-one relationship with users table
