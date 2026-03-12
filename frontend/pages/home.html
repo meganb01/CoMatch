@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CoMatch - Filter Users</title>
+  <link rel="stylesheet" href="../styles/filter.css">
+</head>
+<body>
+  <h1>Find Co-Founders</h1>
+
+  <div id="filter"></div>
+
+  <ul id="user-list"></ul>
+
+  <script type="module">
+    import { createFilter } from "../components/Filter.js";
+
+    const users = [
+      { name: "Alex Chen", country: "Ireland", sector: "Tech, AI", skills: ["Marketing", "Product Management", "Analytics"] },
+      { name: "Sara Lee", country: "France", sector: "Tech, AI", skills: ["Development", "UI/UX", "Blockchain"] },
+      { name: "Liam Smith", country: "Ireland", sector: "Finance", skills: ["Finance", "Operations", "Legal"] },
+      { name: "Emma Brown", country: "Spain", sector: "Marketing", skills: ["Content Writing", "SEO", "Marketing"] }
+    ];
+
+    const countries = ["all", "Ireland", "France", "Spain"];
+    const sectors = ["all", "Tech, AI", "Finance", "Marketing"];
+    const skills = [
+      "Marketing", "Development", "Finance", "Design", "Sales",
+      "Product Management", "HR", "Customer Support", "Legal", "Operations",
+      "Data Science", "QA", "Marketing Research", "Business Development",
+      "UI/UX", "Content Writing", "SEO", "Social Media", "Analytics", "Blockchain"
+    ];
+
+    const userList = document.getElementById("user-list");
+
+    function renderUsers(filteredUsers) {
+      userList.innerHTML = "";
+      filteredUsers.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = `${u.name} — ${u.country} | ${u.sector} | Skills: ${u.skills.join(", ")}`;
+        userList.appendChild(li);
+      });
+    }
+
+    renderUsers(users);
+
+    createFilter("filter", countries, sectors, skills, ({ country, sector, skills }) => {
+      const filtered = users.filter(u => {
+        const matchCountry = country === "all" || u.country === country;
+        const matchSector = sector === "all" || u.sector === sector;
+        const matchSkills = skills.every(skill => u.skills.includes(skill));
+        return matchCountry && matchSector && matchSkills;
+      });
+      renderUsers(filtered);
+    });
+  </script>
+</body>
+</html>
