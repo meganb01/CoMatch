@@ -1,58 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CoMatch - Filter Users</title>
-  <link rel="stylesheet" href="../styles/filter.css">
+<meta charset="UTF-8">
+<title>Find Co-Founders</title>
+<link rel="stylesheet" href="../css/global.css">
 </head>
+
 <body>
-  <h1>Find Co-Founders</h1>
 
-  <div id="filter"></div>
+<div class="profile-page">
 
-  <ul id="user-list"></ul>
+  <div class="profile-card">
 
-  <script type="module">
-    import { createFilter } from "../components/Filter.js";
+    <h2>Find Co-Founders</h2>
 
-    const users = [
-      { name: "Alex Chen", country: "Ireland", sector: "Tech, AI", skills: ["Marketing", "Product Management", "Analytics"] },
-      { name: "Sara Lee", country: "France", sector: "Tech, AI", skills: ["Development", "UI/UX", "Blockchain"] },
-      { name: "Liam Smith", country: "Ireland", sector: "Finance", skills: ["Finance", "Operations", "Legal"] },
-      { name: "Emma Brown", country: "Spain", sector: "Marketing", skills: ["Content Writing", "SEO", "Marketing"] }
-    ];
+    <div class="form-group">
+      <label>Country</label>
+      <input type="text" id="countryInput" placeholder="e.g. Ireland">
+    </div>
 
-    const countries = ["all", "Ireland", "France", "Spain"];
-    const sectors = ["all", "Tech, AI", "Finance", "Marketing"];
-    const skills = [
-      "Marketing", "Development", "Finance", "Design", "Sales",
-      "Product Management", "HR", "Customer Support", "Legal", "Operations",
-      "Data Science", "QA", "Marketing Research", "Business Development",
-      "UI/UX", "Content Writing", "SEO", "Social Media", "Analytics", "Blockchain"
-    ];
+    <div class="form-group">
+      <label>Sector</label>
+      <input type="text" id="sectorInput" placeholder="e.g. Tech">
+    </div>
 
-    const userList = document.getElementById("user-list");
+    <div class="form-group">
+      <label>Skill</label>
+      <input type="text" id="skillInput" placeholder="e.g. Marketing">
+    </div>
 
-    function renderUsers(filteredUsers) {
-      userList.innerHTML = "";
-      filteredUsers.forEach(u => {
-        const li = document.createElement("li");
-        li.textContent = `${u.name} — ${u.country} | ${u.sector} | Skills: ${u.skills.join(", ")}`;
-        userList.appendChild(li);
-      });
-    }
+    <button class="primary-btn" id="filterBtn">Filter</button>
 
-    renderUsers(users);
+  </div>
 
-    createFilter("filter", countries, sectors, skills, ({ country, sector, skills }) => {
-      const filtered = users.filter(u => {
-        const matchCountry = country === "all" || u.country === country;
-        const matchSector = sector === "all" || u.sector === sector;
-        const matchSkills = skills.every(skill => u.skills.includes(skill));
-        return matchCountry && matchSector && matchSkills;
-      });
-      renderUsers(filtered);
-    });
-  </script>
+
+  <div class="profile-card" id="results">
+
+    <div class="user-card" data-country="Ireland" data-sector="Tech" data-skills="Marketing,Product Management">
+      <h3>Alex Chen</h3>
+      <p>Country: Ireland</p>
+      <p>Sector: Tech</p>
+      <p>Skills: Marketing, Product Management</p>
+    </div>
+
+    <div class="user-card" data-country="USA" data-sector="Finance" data-skills="Java,Backend">
+      <h3>Sarah Johnson</h3>
+      <p>Country: USA</p>
+      <p>Sector: Finance</p>
+      <p>Skills: Java, Backend</p>
+    </div>
+
+    <div class="user-card" data-country="UK" data-sector="Design" data-skills="UI,UX">
+      <h3>Tom Lee</h3>
+      <p>Country: UK</p>
+      <p>Sector: Design</p>
+      <p>Skills: UI, UX</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../js/filter.js"></script>
+
 </body>
 </html>

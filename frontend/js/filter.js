@@ -1,75 +1,35 @@
-// Filter.js
-export function createFilter(containerId, countries, sectors, skills, onFilterChange) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
+const filterBtn = document.getElementById("filterBtn")
 
-  // Country dropdown
-  const countryLabel = document.createElement('label');
-  countryLabel.textContent = 'Country:';
-  const countrySelect = document.createElement('select');
-  countrySelect.id = 'country';
-  countries.forEach(c => {
-    const option = document.createElement('option');
-    option.value = c;
-    option.textContent = c;
-    countrySelect.appendChild(option);
-  });
+const countryInput = document.getElementById("countryInput")
+const sectorInput = document.getElementById("sectorInput")
+const skillInput = document.getElementById("skillInput")
 
-  // Sector dropdown
-  const sectorLabel = document.createElement('label');
-  sectorLabel.textContent = 'Sector:';
-  const sectorSelect = document.createElement('select');
-  sectorSelect.id = 'sector';
-  sectors.forEach(s => {
-    const option = document.createElement('option');
-    option.value = s;
-    option.textContent = s;
-    sectorSelect.appendChild(option);
-  });
+const users = document.querySelectorAll(".user-card")
 
-  // Skills buttons
-  const skillsContainer = document.createElement('div');
-  skillsContainer.classList.add('filter-container');
-  skills.forEach(skill => {
-    const button = document.createElement('button');
-    button.textContent = skill;
-    button.classList.add('skill-btn');
-    button.dataset.skill = skill;
-    skillsContainer.appendChild(button);
 
-    button.addEventListener('click', () => {
-      button.classList.toggle('selected');
-      const selectedSkills = Array.from(
-        skillsContainer.querySelectorAll('.skill-btn.selected')
-      ).map(b => b.dataset.skill);
+filterBtn.addEventListener("click", function () {
 
-      onFilterChange({
-        country: countrySelect.value,
-        sector: sectorSelect.value,
-        skills: selectedSkills
-      });
-    });
-  });
+    const country = countryInput.value.toLowerCase()
+    const sector = sectorInput.value.toLowerCase()
+    const skill = skillInput.value.toLowerCase()
 
-  // Append elements
-  container.appendChild(countryLabel);
-  container.appendChild(countrySelect);
-  container.appendChild(sectorLabel);
-  container.appendChild(sectorSelect);
-  container.appendChild(skillsContainer);
+    users.forEach(function(user){
 
-  function applyFilter() {
-    const selectedSkills = Array.from(
-      skillsContainer.querySelectorAll('.skill-btn.selected')
-    ).map(b => b.dataset.skill);
+        const userCountry = user.dataset.country.toLowerCase()
+        const userSector = user.dataset.sector.toLowerCase()
+        const userSkills = user.dataset.skills.toLowerCase()
 
-    onFilterChange({
-      country: countrySelect.value,
-      sector: sectorSelect.value,
-      skills: selectedSkills
-    });
-  }
+        if(
+            (country === "" || userCountry.includes(country)) &&
+            (sector === "" || userSector.includes(sector)) &&
+            (skill === "" || userSkills.includes(skill))
+        ){
+            user.style.display = "block"
+        }
+        else{
+            user.style.display = "none"
+        }
 
-  countrySelect.addEventListener('change', applyFilter);
-  sectorSelect.addEventListener('change', applyFilter);
-}
+    })
+
+})

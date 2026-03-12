@@ -404,3 +404,13 @@ button,
   color: #3b82f6;
   cursor: pointer;
 }
+.user-card{
+  background:#0e1629;
+  padding:16px;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.form-group{
+  margin-bottom:12px;
+}
