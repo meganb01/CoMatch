@@ -10,7 +10,7 @@ import java.util.List;
  * Spring Data JPA repository for UserSector entity.
  * deleteByUserId is used when replacing a user's sector on profile update (must be @Modifying + @Query).
  */
-public interface UserSectorRepository extends JpaRepository<UserSector, Long> {
+public interface UserSectorRepository extends JpaRepository<UserSector, UserSector.UserSectorId> {
 
     List<UserSector> findByUserId(Long userId);
 

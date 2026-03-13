@@ -1,52 +1,49 @@
 package ie.nci.comatchbackend;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.io.Serializable;
 
 /**
- * JPA entity: one skill per row (table: user_skills).
- * A user can have multiple skills; ProfileService replaces all skills on profile update.
+ * JPA entity for user_skills junction table (user_id + skill_id).
+ * Matches schema: composite PK, no id column.
  */
 @Entity
 @Table(name = "user_skills")
+@IdClass(UserSkill.UserSkillId.class)
 public class UserSkill {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "skill_name", nullable = false)
-    private String skillName;
+    @Id
+    @Column(name = "skill_id", nullable = false)
+    private Long skillId;
 
-    public Long getId() {
-        return id;
-    }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getSkillId() { return skillId; }
+    public void setSkillId(Long skillId) { this.skillId = skillId; }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getSkillName() {
-        return skillName;
-    }
-
-    public void setSkillName(String skillName) {
-        this.skillName = skillName;
+    /** Composite key for user_skills. */
+    public static class UserSkillId implements Serializable {
+        private Long userId;
+        private Long skillId;
+        public UserSkillId() {}
+        public UserSkillId(Long userId, Long skillId) {
+            this.userId = userId;
+            this.skillId = skillId;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof UserSkillId that)) return false;
+            return java.util.Objects.equals(userId, that.userId) && java.util.Objects.equals(skillId, that.skillId);
+        }
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(userId, skillId);
+        }
     }
 }
-

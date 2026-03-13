@@ -22,13 +22,19 @@ public class ProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserSkillRepository userSkillRepository;
     private final UserSectorRepository userSectorRepository;
+    private final SkillRepository skillRepository;
+    private final SectorRepository sectorRepository;
 
     public ProfileService(UserProfileRepository userProfileRepository,
                           UserSkillRepository userSkillRepository,
-                          UserSectorRepository userSectorRepository) {
+                          UserSectorRepository userSectorRepository,
+                          SkillRepository skillRepository,
+                          SectorRepository sectorRepository) {
         this.userProfileRepository = userProfileRepository;
         this.userSkillRepository = userSkillRepository;
         this.userSectorRepository = userSectorRepository;
+        this.skillRepository = skillRepository;
+        this.sectorRepository = sectorRepository;
     }
 
     /**
@@ -59,36 +65,34 @@ public class ProfileService {
         profile.setCountry(request.getCountry());
         userProfileRepository.save(profile);
 
-        // Replace skills: delete existing, then insert from request
+        // Replace skills: delete existing, then insert from request (look up skill_id by name)
         userSkillRepository.deleteByUserId(userId);
-        for (String skill : skills) {
-            if (skill == null || skill.isBlank()) {
-                continue;
-            }
-            UserSkill userSkill = new UserSkill();
-            userSkill.setUserId(userId);
-            userSkill.setSkillName(skill.trim());
-            userSkillRepository.save(userSkill);
+        for (String skillName : skills) {
+            if (skillName == null || skillName.isBlank()) continue;
+            skillRepository.findBySkillNameIgnoreCase(skillName.trim()).ifPresent(skill -> {
+                UserSkill userSkill = new UserSkill();
+                userSkill.setUserId(userId);
+                userSkill.setSkillId(skill.getId());
+                userSkillRepository.save(userSkill);
+            });
         }
 
-        // Replace sector: we store a single industry per user in user_sectors
+        // Replace sector: we store a single industry per user in user_sectors (look up sector_id by name)
         userSectorRepository.deleteByUserId(userId);
         if (request.getIndustry() != null && !request.getIndustry().isBlank()) {
-            UserSector sector = new UserSector();
-            sector.setUserId(userId);
-            sector.setSectorName(request.getIndustry().trim());
-            userSectorRepository.save(sector);
+            sectorRepository.findBySectorNameIgnoreCase(request.getIndustry().trim()).ifPresent(sector -> {
+                UserSector userSector = new UserSector();
+                userSector.setUserId(userId);
+                userSector.setSectorId(sector.getId());
+                userSectorRepository.save(userSector);
+            });
         }
 
-        List<String> savedSkills = userSkillRepository.findByUserId(userId)
-                .stream()
-                .map(UserSkill::getSkillName)
-                .toList();
+        List<String> savedSkills = skillRepository.findSkillNamesByUserId(userId);
 
         String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
         if (selectedIndustry == null) {
-            selectedIndustry = userSectorRepository.findByUserId(userId).stream()
-                    .map(UserSector::getSectorName)
+            selectedIndustry = sectorRepository.findSectorNamesByUserId(userId).stream()
                     .findFirst()
                     .orElse(null);
         }
@@ -110,15 +114,11 @@ public class ProfileService {
         UserProfile profile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found for user"));
 
-        List<String> skills = userSkillRepository.findByUserId(userId)
-                .stream()
-                .map(UserSkill::getSkillName)
-                .toList();
+        List<String> skills = skillRepository.findSkillNamesByUserId(userId);
 
         String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
         if (selectedIndustry == null) {
-            selectedIndustry = userSectorRepository.findByUserId(userId).stream()
-                    .map(UserSector::getSectorName)
+            selectedIndustry = sectorRepository.findSectorNamesByUserId(userId).stream()
                     .findFirst()
                     .orElse(null);
         }
