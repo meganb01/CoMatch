@@ -1,49 +1,52 @@
 package ie.nci.comatchbackend;
 
-import jakarta.persistence.*;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
- * JPA entity for user_sectors junction table (user_id + sector_id).
- * Matches schema: composite PK, no id column.
+ * JPA entity: industry/sector interest (table: user_sectors).
+ * Currently one sector per user; ProfileService replaces it on profile update.
  */
 @Entity
 @Table(name = "user_sectors")
-@IdClass(UserSector.UserSectorId.class)
 public class UserSector {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Id
-    @Column(name = "sector_id", nullable = false)
-    private Long sectorId;
+    @Column(name = "sector_name", nullable = false)
+    private String sectorName;
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getSectorId() { return sectorId; }
-    public void setSectorId(Long sectorId) { this.sectorId = sectorId; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    /** Composite key for user_sectors. */
-    public static class UserSectorId implements Serializable {
-        private Long userId;
-        private Long sectorId;
-        public UserSectorId() {}
-        public UserSectorId(Long userId, Long sectorId) {
-            this.userId = userId;
-            this.sectorId = sectorId;
-        }
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof UserSectorId that)) return false;
-            return java.util.Objects.equals(userId, that.userId) && java.util.Objects.equals(sectorId, that.sectorId);
-        }
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(userId, sectorId);
-        }
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getSectorName() {
+        return sectorName;
+    }
+
+    public void setSectorName(String sectorName) {
+        this.sectorName = sectorName;
     }
 }
+

@@ -1,23 +1,27 @@
 package ie.nci.comatchbackend;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 /**
- * DTO for swipe actions.
- * Client sends: { "targetUserId": 5, "swipeType": "LIKE" }
+ * DTO for swipe request body.
+ * Client sends: { "targetUserId": 123, "action": "like" | "pass" }
  */
 public class SwipeRequest {
 
-    @NotNull(message = "Target user ID is required")
     private Long targetUserId;
+    private String action;
 
-    @NotBlank(message = "Swipe type is required (LIKE or PASS)")
-    private String swipeType;
+    public Long getTargetUserId() {
+        return targetUserId;
+    }
 
-    public Long getTargetUserId() { return targetUserId; }
-    public void setTargetUserId(Long targetUserId) { this.targetUserId = targetUserId; }
+    public void setTargetUserId(Long targetUserId) {
+        this.targetUserId = targetUserId;
+    }
 
-    public String getSwipeType() { return swipeType; }
-    public void setSwipeType(String swipeType) { this.swipeType = swipeType; }
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
 }

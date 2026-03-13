@@ -10,7 +10,7 @@ import java.util.List;
  * Spring Data JPA repository for UserSkill entity.
  * deleteByUserId is used when replacing a user's skills on profile update (must be @Modifying + @Query).
  */
-public interface UserSkillRepository extends JpaRepository<UserSkill, UserSkill.UserSkillId> {
+public interface UserSkillRepository extends JpaRepository<UserSkill, Long> {
 
     List<UserSkill> findByUserId(Long userId);
 

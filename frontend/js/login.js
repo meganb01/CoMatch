@@ -26,14 +26,15 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             body: JSON.stringify({email, password}),
         });
 
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json();
 
         if(response.ok){
             console.log("Logged in:", data);
+            //Save userId, email, and token for API calls
             sessionStorage.setItem("userId", data.userId);
             sessionStorage.setItem("email", data.email);
             if (data.token) localStorage.setItem("cm_token", data.token);
-
+            
             successDiv.textContent = "Login successful! Redirecting...";
             setTimeout(()=> {
                 window.location.href = "profile.html";

@@ -1,5 +1,5 @@
 // profile.js (complete, merged)
-// Configure API 
+// Configure API – must point to backend for profile/discover to work
 const API_BASE = "http://localhost:8080";
 const PROFILE_GET = API_BASE + "/api/profile/me";
 const PROFILE_POST = API_BASE + "/api/profile";
@@ -161,9 +161,11 @@ if (bioInput && bioCount) {
 // Populate both view and edit from a user object
 function populateFormAndView(u){
   const user = u || {};
+  const sector = user.sector || user.industry || "";
+  const avatarUrl = user.avatarUrl || user.profilePhotoUrl || "";
   if (nameInput) nameInput.value = user.name || "";
   if (countryInput) countryInput.value = user.country || "";
-  if (sectorInput) sectorInput.value = user.sector || "";
+  if (sectorInput) sectorInput.value = sector;
   if (bioInput) bioInput.value = user.bio || "";
   if (bioCount) bioCount.textContent = `${(bioInput && bioInput.value.length) || 0}/100`;
 
@@ -171,31 +173,32 @@ function populateFormAndView(u){
            (typeof user.skills === "string" ? user.skills.split(",").map(s => s.trim()).filter(Boolean) : []);
   if (skillsInput && skillsInput.value.trim() === "") skillsInput.value = skills.join(", ");
 
-  if (avatarPreview && user.avatarUrl) avatarPreview.src = user.avatarUrl;
-  if (viewAvatar && user.avatarUrl) viewAvatar.src = user.avatarUrl;
+  if (avatarPreview && avatarUrl) avatarPreview.src = avatarUrl;
+  if (viewAvatar && avatarUrl) viewAvatar.src = avatarUrl;
 
   // view side
   if (viewName) viewName.textContent = user.name || "No name";
   if (viewCountry) viewCountry.textContent = user.country || "";
-  if (viewSector) viewSector.textContent = user.sector || "";
+  if (viewSector) viewSector.textContent = sector;
   if (viewBio) viewBio.textContent = user.bio || "";
   renderSkillsEdit();
   renderSkillsView();
 }
 
-// Get display name from logged-in user's email (e.g. "demo@in.com" → "demo")
-function getDisplayNameFromEmail() {
-  const email = sessionStorage.getItem("email") || "";
-  if (!email) return "User";
-  const part = email.split("@")[0];
-  return (part && part.trim()) ? part.trim() : "User";
-}
-
-// Load profile: when logged in, try API first so we show your name (from email) not old "Alex" from localStorage
+// Load profile: try token/backend or fallback to local mock
 async function loadProfile(){
-  const token = localStorage.getItem(TOKEN_KEY);
+  // try localStorage saved profile first
+  const saved = localStorage.getItem("mock_profile");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      populateFormAndView(parsed);
+      return;
+    } catch(e) { /* ignore parse errors */ }
+  }
 
-  // Logged in: try backend first so we never show old mock_profile "Alex Chen"
+  // If API configured and token exists, attempt fetch
+  const token = localStorage.getItem(TOKEN_KEY);
   if (API_BASE && token) {
     try {
       const res = await fetch(PROFILE_GET, {
@@ -207,43 +210,21 @@ async function loadProfile(){
         populateFormAndView(user);
         return;
       }
-      // 400 = profile not found (new user): show name from email
     } catch (err) {
       console.warn("Profile fetch failed:", err);
     }
-    // Show logged-in user's name from email (e.g. demo@in.com → "demo")
-    const displayName = getDisplayNameFromEmail();
-    populateFormAndView({
-      name: displayName,
-      country: "",
-      sector: "",
-      skills: [],
-      bio: "",
-      avatarUrl: "https://i.pravatar.cc/150?img=12"
-    });
-    return;
   }
 
-  // Not logged in: try localStorage saved profile
-  const saved = localStorage.getItem("mock_profile");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      populateFormAndView(parsed);
-      return;
-    } catch(e) { /* ignore */ }
-  }
-
-  // Final fallback
-  const displayName = getDisplayNameFromEmail();
-  populateFormAndView({
-    name: displayName,
-    country: "",
-    sector: "",
-    skills: [],
-    bio: "",
+  // fallback mock
+  const mock = {
+    name: "Alex Chen",
+    country: "Ireland",
+    sector: "Tech, AI",
+    skills: ["Product Management", "Marketing"],
+    bio: "Looking for a technical co-founder.",
     avatarUrl: "https://i.pravatar.cc/150?img=12"
-  });
+  };
+  populateFormAndView(mock);
 }
 
 // Save handler: update view and persist locally or send to API
@@ -264,23 +245,23 @@ async function saveProfile(){
     avatarUrl: null
   };
 
-  // if avatarFile exists and API accepts multipart, send FormData; otherwise persist locally
   const token = localStorage.getItem(TOKEN_KEY);
-  if (API_BASE && token) {
+  if (token) {
     try {
       const body = {
         name: payload.name,
         country: payload.country,
-        industry: payload.sector || "",
+        industry: payload.sector,
         bio: payload.bio,
-        skills: payload.skills
+        skills: payload.skills,
+        profilePhotoUrl: (avatarPreview && avatarPreview.src) || null
       };
 
       const res = await fetch(PROFILE_POST, {
         method: "POST",
         headers: {
-          "Authorization": "Bearer " + token,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
         body: JSON.stringify(body)
       });
@@ -290,7 +271,6 @@ async function saveProfile(){
         return;
       }
       const data = await res.json();
-      // update view with response if provided
       populateFormAndView(data.user || data);
       showViewMode();
       alert("Profile saved.");
@@ -318,12 +298,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (editBtn) editBtn.addEventListener("click", showEditMode);
   if (saveBtn) saveBtn.addEventListener("click", (e) => { e.preventDefault(); saveProfile(); });
   if (cancelBtn) cancelBtn.addEventListener("click", (e) => { e.preventDefault(); showViewMode(); loadProfile(); });
-  const discoverBtn = document.getElementById("discoverBtn");
-  if (discoverBtn) discoverBtn.addEventListener("click", () => { window.location.href = "discover.html"; });
   if (logoutBtn) logoutBtn.addEventListener("click", () => {
     // logout behaviour (frontend-only)
     localStorage.removeItem(TOKEN_KEY);
     alert("Logged out");
     window.location.href = "login.html";
   });
+
+  // ===== DISCOVER BUTTON =====
+  const discoverBtn = document.getElementById("discoverBtn");
+  if (discoverBtn) {
+    discoverBtn.addEventListener("click", () => {
+      window.location.href = "discover.html";
+    });
+  }
 });

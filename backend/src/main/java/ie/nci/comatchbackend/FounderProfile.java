@@ -32,8 +32,12 @@ public class FounderProfile {
         return userId;
     }
 
-    public String getName() {
+    /** Alias for frontend discover (expects profile.id). */
+    public Long getId() {
+        return userId;
+    }
 
+    public String getName() {
         return name;
     }
 
@@ -47,22 +51,16 @@ public class FounderProfile {
         return profilePhotoUrl;
     }
 
-    /** Alias for frontend compatibility (profile.js expects user.avatarUrl). */
-    public String getAvatarUrl() {
-        return profilePhotoUrl;
-    }
-
     public List<String> getSkills() {
 
         return skills;
     }
 
     public String getIndustry() {
-
         return industry;
     }
 
-    /** Alias for frontend compatibility (profile.js expects user.sector). */
+    /** Alias for frontend discover (expects profile.sector). */
     public String getSector() {
         return industry;
     }

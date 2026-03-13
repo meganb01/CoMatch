@@ -22,19 +22,13 @@ public class ProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserSkillRepository userSkillRepository;
     private final UserSectorRepository userSectorRepository;
-    private final SkillRepository skillRepository;
-    private final SectorRepository sectorRepository;
 
     public ProfileService(UserProfileRepository userProfileRepository,
                           UserSkillRepository userSkillRepository,
-                          UserSectorRepository userSectorRepository,
-                          SkillRepository skillRepository,
-                          SectorRepository sectorRepository) {
+                          UserSectorRepository userSectorRepository) {
         this.userProfileRepository = userProfileRepository;
         this.userSkillRepository = userSkillRepository;
         this.userSectorRepository = userSectorRepository;
-        this.skillRepository = skillRepository;
-        this.sectorRepository = sectorRepository;
     }
 
     /**
@@ -65,37 +59,33 @@ public class ProfileService {
         profile.setCountry(request.getCountry());
         userProfileRepository.save(profile);
 
-        // Replace skills: delete existing, then insert from request (look up skill_id by name)
+        // Replace skills: delete existing, then insert from request
         userSkillRepository.deleteByUserId(userId);
-        for (String skillName : skills) {
-            if (skillName == null || skillName.isBlank()) continue;
-            skillRepository.findBySkillNameIgnoreCase(skillName.trim()).ifPresent(skill -> {
-                UserSkill userSkill = new UserSkill();
-                userSkill.setUserId(userId);
-                userSkill.setSkillId(skill.getId());
-                userSkillRepository.save(userSkill);
-            });
+        for (String skill : skills) {
+            if (skill == null || skill.isBlank()) {
+                continue;
+            }
+            UserSkill userSkill = new UserSkill();
+            userSkill.setUserId(userId);
+            userSkill.setSkillName(skill.trim());
+            userSkillRepository.save(userSkill);
         }
 
-        // Replace sector: we store a single industry per user in user_sectors (look up sector_id by name)
+        // Replace sector: we store a single industry per user in user_sectors
         userSectorRepository.deleteByUserId(userId);
         if (request.getIndustry() != null && !request.getIndustry().isBlank()) {
-            sectorRepository.findBySectorNameIgnoreCase(request.getIndustry().trim()).ifPresent(sector -> {
-                UserSector userSector = new UserSector();
-                userSector.setUserId(userId);
-                userSector.setSectorId(sector.getId());
-                userSectorRepository.save(userSector);
-            });
+            UserSector sector = new UserSector();
+            sector.setUserId(userId);
+            sector.setSectorName(request.getIndustry().trim());
+            userSectorRepository.save(sector);
         }
 
-        List<String> savedSkills = skillRepository.findSkillNamesByUserId(userId);
+        List<String> savedSkills = userSkillRepository.findByUserId(userId)
+                .stream()
+                .map(UserSkill::getSkillName)
+                .toList();
 
         String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
-        if (selectedIndustry == null) {
-            selectedIndustry = sectorRepository.findSectorNamesByUserId(userId).stream()
-                    .findFirst()
-                    .orElse(null);
-        }
 
         return new FounderProfile(
                 userId,
@@ -108,28 +98,30 @@ public class ProfileService {
         );
     }
 
-    /** Load profile for the given user; throws if profile not found. */
+    /** Load profile for the given user. Returns empty profile if none exists (new users can then create one). */
     @Transactional(readOnly = true)
     public FounderProfile getProfile(Long userId) {
-        UserProfile profile = userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Profile not found for user"));
+        return userProfileRepository.findByUserId(userId)
+                .map(this::toFounderProfile)
+                .orElse(new FounderProfile(userId, "", "", null, List.of(), "", ""));
+    }
 
-        List<String> skills = skillRepository.findSkillNamesByUserId(userId);
-
-        String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
-        if (selectedIndustry == null) {
-            selectedIndustry = sectorRepository.findSectorNamesByUserId(userId).stream()
-                    .findFirst()
-                    .orElse(null);
-        }
-
+    /** Build FounderProfile from UserProfile (used by discover feed). */
+    @Transactional(readOnly = true)
+    public FounderProfile toFounderProfile(UserProfile profile) {
+        Long userId = profile.getUserId();
+        List<String> skills = userSkillRepository.findByUserId(userId)
+                .stream()
+                .map(UserSkill::getSkillName)
+                .toList();
+        String industry = Optional.ofNullable(profile.getIndustry()).orElse(null);
         return new FounderProfile(
                 userId,
                 profile.getFullName(),
                 profile.getBio(),
                 profile.getProfilePhotoUrl(),
                 skills,
-                selectedIndustry,
+                industry,
                 profile.getCountry()
         );
     }

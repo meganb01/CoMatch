@@ -1,78 +1,53 @@
 package ie.nci.comatchbackend;
 
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * DiscoverController: endpoints called by the discover.js frontend page.
- * GET  /api/profiles/discover  – all unswiped profiles (array)
- * POST /api/profiles/swipe     – record like/pass, returns { match: boolean }
+ * DiscoverController: REST endpoints for discover feed and swipe.
+ * Base path: /api/profiles
+ * All endpoints require Authorization: Bearer &lt;token&gt; (from login).
+ * - GET /discover – list discoverable profiles (excluding current user)
+ * - POST /swipe – record like or pass
  */
 @RestController
 @RequestMapping("/api/profiles")
 @CrossOrigin
 public class DiscoverController {
 
-    private final UserProfileRepository userProfileRepository;
-    private final SkillRepository skillRepository;
-    private final SectorRepository sectorRepository;
-    private final SwipeService swipeService;
+    private final DiscoverService discoverService;
 
-    public DiscoverController(UserProfileRepository userProfileRepository,
-                              SkillRepository skillRepository,
-                              SectorRepository sectorRepository,
-                              SwipeService swipeService) {
-        this.userProfileRepository = userProfileRepository;
-        this.skillRepository = skillRepository;
-        this.sectorRepository = sectorRepository;
-        this.swipeService = swipeService;
+    public DiscoverController(DiscoverService discoverService) {
+        this.discoverService = discoverService;
     }
 
+    /** Get discoverable profiles (other users who have a profile). */
     @GetMapping("/discover")
-    public ResponseEntity<List<DiscoverProfile>> discover(
+    public ResponseEntity<List<FounderProfile>> getDiscover(
             @RequestHeader(name = "Authorization", required = false) String authorization) {
 
-        Long currentUserId = requireAuthenticatedUser(authorization);
-
-        List<UserProfile> candidates = userProfileRepository.findAllDiscoverable(currentUserId);
-
-        List<DiscoverProfile> result = candidates.stream().map(up -> {
-            List<String> skills = skillRepository.findSkillNamesByUserId(up.getUserId());
-            List<String> sectors = sectorRepository.findSectorNamesByUserId(up.getUserId());
-            String sector = sectors.isEmpty() ? "" : sectors.get(0);
-
-            return new DiscoverProfile(
-                    up.getUserId(),
-                    up.getFullName(),
-                    up.getPhotoUrl(),
-                    sector,
-                    skills,
-                    up.getBio(),
-                    up.getLocation()
-            );
-        }).toList();
-
-        return ResponseEntity.ok(result);
+        Long userId = requireAuthenticatedUser(authorization);
+        List<FounderProfile> profiles = discoverService.getDiscoverableProfiles(userId);
+        return ResponseEntity.ok(profiles);
     }
 
+    /** Process a swipe (like or pass). */
     @PostMapping("/swipe")
-    public ResponseEntity<Map<String, Object>> swipe(
+    public ResponseEntity<DiscoverService.SwipeResponse> swipe(
             @RequestHeader(name = "Authorization", required = false) String authorization,
-            @Valid @RequestBody DiscoverSwipeRequest request) {
+            @RequestBody SwipeRequest request) {
 
-        Long currentUserId = requireAuthenticatedUser(authorization);
+        Long userId = requireAuthenticatedUser(authorization);
+        Long targetUserId = request.getTargetUserId();
+        if (targetUserId == null) {
+            throw new IllegalArgumentException("targetUserId is required");
+        }
+        String action = request.getAction() != null ? request.getAction() : "pass";
 
-        String swipeType = request.getAction().equalsIgnoreCase("like") ? "LIKE" : "PASS";
-        SwipeResponse sr = swipeService.recordSwipe(currentUserId, request.getTargetUserId(), swipeType);
-
-        Map<String, Object> body = new HashMap<>();
-        body.put("match", sr.isMatched());
-        return ResponseEntity.ok(body);
+        DiscoverService.SwipeResponse response = discoverService.swipe(userId, targetUserId, action);
+        return ResponseEntity.ok(response);
     }
 
     private Long requireAuthenticatedUser(String authorizationHeader) {
