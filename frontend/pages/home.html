@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Find Co-Founders</title>
+<link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body>
+
+<div class="profile-page">
+
+  <div class="profile-card">
+
+    <h2>Find Co-Founders</h2>
+
+    <div class="form-group">
+      <label>Country</label>
+      <input type="text" id="countryInput" placeholder="e.g. Ireland">
+    </div>
+
+    <div class="form-group">
+      <label>Sector</label>
+      <input type="text" id="sectorInput" placeholder="e.g. Tech">
+    </div>
+
+    <div class="form-group">
+      <label>Skill</label>
+      <input type="text" id="skillInput" placeholder="e.g. Marketing">
+    </div>
+
+    <button class="primary-btn" id="filterBtn">Filter</button>
+
+  </div>
+
+
+  <div class="profile-card" id="results">
+
+    <div class="user-card" data-country="Ireland" data-sector="Tech" data-skills="Marketing,Product Management">
+      <h3>Alex Chen</h3>
+      <p>Country: Ireland</p>
+      <p>Sector: Tech</p>
+      <p>Skills: Marketing, Product Management</p>
+    </div>
+
+    <div class="user-card" data-country="USA" data-sector="Finance" data-skills="Java,Backend">
+      <h3>Sarah Johnson</h3>
+      <p>Country: USA</p>
+      <p>Sector: Finance</p>
+      <p>Skills: Java, Backend</p>
+    </div>
+
+    <div class="user-card" data-country="UK" data-sector="Design" data-skills="UI,UX">
+      <h3>Tom Lee</h3>
+      <p>Country: UK</p>
+      <p>Sector: Design</p>
+      <p>Skills: UI, UX</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../js/filter.js"></script>
+
+</body>
+</html>

@@ -318,6 +318,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (editBtn) editBtn.addEventListener("click", showEditMode);
   if (saveBtn) saveBtn.addEventListener("click", (e) => { e.preventDefault(); saveProfile(); });
   if (cancelBtn) cancelBtn.addEventListener("click", (e) => { e.preventDefault(); showViewMode(); loadProfile(); });
+  const discoverBtn = document.getElementById("discoverBtn");
+  if (discoverBtn) discoverBtn.addEventListener("click", () => { window.location.href = "discover.html"; });
   if (logoutBtn) logoutBtn.addEventListener("click", () => {
     // logout behaviour (frontend-only)
     localStorage.removeItem(TOKEN_KEY);
