@@ -86,6 +86,12 @@ public class ProfileService {
                 .toList();
 
         String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
+        if (selectedIndustry == null) {
+            selectedIndustry = userSectorRepository.findByUserId(userId).stream()
+                    .map(UserSector::getSectorName)
+                    .findFirst()
+                    .orElse(null);
+        }
 
         return new FounderProfile(
                 userId,
@@ -110,6 +116,12 @@ public class ProfileService {
                 .toList();
 
         String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
+        if (selectedIndustry == null) {
+            selectedIndustry = userSectorRepository.findByUserId(userId).stream()
+                    .map(UserSector::getSectorName)
+                    .findFirst()
+                    .orElse(null);
+        }
 
         return new FounderProfile(
                 userId,

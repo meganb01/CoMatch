@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * JPA entity: founder profile (table: user_profile).
@@ -79,6 +80,16 @@ public class UserProfile {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    /** Alias for DiscoverController compatibility (maps to profile_photo_url / photo_url). */
+    public String getPhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    /** Alias for DiscoverController compatibility (maps to location). */
+    public String getLocation() {
+        return country;
     }
 }
 
