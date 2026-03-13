@@ -47,6 +47,11 @@ public class FounderProfile {
         return profilePhotoUrl;
     }
 
+    /** Alias for frontend compatibility (profile.js expects user.avatarUrl). */
+    public String getAvatarUrl() {
+        return profilePhotoUrl;
+    }
+
     public List<String> getSkills() {
 
         return skills;
@@ -54,6 +59,11 @@ public class FounderProfile {
 
     public String getIndustry() {
 
+        return industry;
+    }
+
+    /** Alias for frontend compatibility (profile.js expects user.sector). */
+    public String getSector() {
         return industry;
     }
 
