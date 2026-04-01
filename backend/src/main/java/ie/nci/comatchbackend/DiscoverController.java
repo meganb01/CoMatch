@@ -1,5 +1,6 @@
 package ie.nci.comatchbackend;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,12 +10,13 @@ import java.util.List;
  * DiscoverController: REST endpoints for discover feed and swipe.
  * Base path: /api/profiles
  * All endpoints require Authorization: Bearer &lt;token&gt; (from login).
- * - GET /discover – list discoverable profiles (excluding current user)
+ * - GET /discover – list discoverable profiles (excluding self and already-swiped; optional ?country=&industry=&skill=)
  * - POST /swipe – record like or pass
  */
 @RestController
 @RequestMapping("/api/profiles")
 @CrossOrigin
+@SecurityRequirement(name = "bearerAuth")
 public class DiscoverController {
 
     private final DiscoverService discoverService;
@@ -26,10 +28,13 @@ public class DiscoverController {
     /** Get discoverable profiles (other users who have a profile). */
     @GetMapping("/discover")
     public ResponseEntity<List<FounderProfile>> getDiscover(
-            @RequestHeader(name = "Authorization", required = false) String authorization) {
+            @RequestHeader(name = "Authorization", required = false) String authorization,
+            @RequestParam(name = "country", required = false) String country,
+            @RequestParam(name = "industry", required = false) String industry,
+            @RequestParam(name = "skill", required = false) String skill) {
 
         Long userId = requireAuthenticatedUser(authorization);
-        List<FounderProfile> profiles = discoverService.getDiscoverableProfiles(userId);
+        List<FounderProfile> profiles = discoverService.getDiscoverableProfiles(userId, country, industry, skill);
         return ResponseEntity.ok(profiles);
     }
 

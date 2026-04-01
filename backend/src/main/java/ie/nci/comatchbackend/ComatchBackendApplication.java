@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Entry point for the CoMatch backend.
- * Starts the Spring Boot application; REST API runs on port 8080S.
+ * Starts the Spring Boot application; REST API runs on port 8080 (default).
  */
 @SpringBootApplication
 public class ComatchBackendApplication {
