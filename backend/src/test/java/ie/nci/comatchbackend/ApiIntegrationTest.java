@@ -25,6 +25,9 @@ class ApiIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UserMatchRepository userMatchRepository;
+
     @Test
     void openApiDocs_available() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
@@ -75,5 +78,63 @@ class ApiIntegrationTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void messages_sendAndList_betweenMatchedUsers() throws Exception {
+        String suffix = String.valueOf(System.nanoTime());
+        String e1 = "m1-" + suffix + "@example.com";
+        String e2 = "m2-" + suffix + "@example.com";
+        String password = "password12";
+
+        mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + e1 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + e2 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isCreated());
+
+        JsonNode j1 = MAPPER.readTree(mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"" + e1 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        JsonNode j2 = MAPPER.readTree(mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"" + e2 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+
+        long u1 = j1.get("userId").asLong();
+        long u2 = j2.get("userId").asLong();
+        String t1 = j1.get("token").asText();
+        String t2 = j2.get("token").asText();
+
+        UserMatch match = new UserMatch();
+        match.setUser1Id(Math.min(u1, u2));
+        match.setUser2Id(Math.max(u1, u2));
+        long matchId = userMatchRepository.save(match).getId();
+
+        mockMvc.perform(post("/api/matches/" + matchId + "/messages")
+                        .header("Authorization", "Bearer " + t1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"body\":\"Hello from user1\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.body").value("Hello from user1"))
+                .andExpect(jsonPath("$.senderUserId").value(u1));
+
+        mockMvc.perform(get("/api/matches/" + matchId + "/messages")
+                        .header("Authorization", "Bearer " + t2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].body").value("Hello from user1"));
+
+        String e3 = "m3-" + suffix + "@example.com";
+        mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + e3 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isCreated());
+        JsonNode j3 = MAPPER.readTree(mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"" + e3 + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        String t3 = j3.get("token").asText();
+
+        mockMvc.perform(get("/api/matches/" + matchId + "/messages")
+                        .header("Authorization", "Bearer " + t3))
+                .andExpect(status().isForbidden());
     }
 }

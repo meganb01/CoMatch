@@ -22,7 +22,7 @@ public class MatchController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FounderProfile>> getMyMatches(
+    public ResponseEntity<List<MatchListItem>> getMyMatches(
             @RequestHeader(name = "Authorization", required = false) String authorization) {
 
         Long userId = requireAuthenticatedUser(authorization);

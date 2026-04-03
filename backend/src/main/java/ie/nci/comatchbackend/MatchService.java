@@ -20,11 +20,12 @@ public class MatchService {
     }
 
     @Transactional(readOnly = true)
-    public List<FounderProfile> listMatches(Long userId) {
+    public List<MatchListItem> listMatches(Long userId) {
         return userMatchRepository.findAllByUserId(userId).stream()
                 .map(m -> {
                     Long otherUserId = m.getUser1Id().equals(userId) ? m.getUser2Id() : m.getUser1Id();
-                    return profileService.getProfile(otherUserId);
+                    FounderProfile p = profileService.getProfile(otherUserId);
+                    return new MatchListItem(m.getId(), p);
                 })
                 .toList();
     }
