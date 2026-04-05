@@ -19,10 +19,13 @@ public class MessageService {
 
     private final UserMatchRepository userMatchRepository;
     private final MessageRepository messageRepository;
+    private final ProfileService profileService;
 
-    public MessageService(UserMatchRepository userMatchRepository, MessageRepository messageRepository) {
+    public MessageService(UserMatchRepository userMatchRepository, MessageRepository messageRepository,
+                          ProfileService profileService) {
         this.userMatchRepository = userMatchRepository;
         this.messageRepository = messageRepository;
+        this.profileService = profileService;
     }
 
     @Transactional
@@ -35,7 +38,7 @@ public class MessageService {
         m.setSenderUserId(senderUserId);
         m.setBody(body.trim());
         messageRepository.save(m);
-        return MessageResponse.fromEntity(m);
+        return MessageResponse.fromEntity(m, resolveSenderName(senderUserId));
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +50,12 @@ public class MessageService {
         int safePage = Math.max(page, 0);
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("createdAt").ascending());
         return messageRepository.findByMatch_IdOrderByCreatedAtAsc(matchId, pageable)
-                .map(MessageResponse::fromEntity);
+                .map(m -> MessageResponse.fromEntity(m, resolveSenderName(m.getSenderUserId())));
+    }
+
+    private String resolveSenderName(Long senderUserId) {
+        String name = profileService.getProfile(senderUserId).getName();
+        return name != null && !name.isBlank() ? name : "";
     }
 
     private static void assertParticipant(Long userId, UserMatch match) {
