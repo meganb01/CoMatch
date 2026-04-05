@@ -16,9 +16,11 @@ public class FounderProfile {
     private List<String> skills;
     private String industry;
     private String country;
+    /** FR-009: IDEA, MVP, or FUNDED; may be null. */
+    private String startupStage;
 
     public FounderProfile(Long userId, String name, String bio, String profilePhotoUrl,
-                          List<String> skills, String industry, String country) {
+                          List<String> skills, String industry, String country, String startupStage) {
         this.userId = userId;
         this.name = name;
         this.bio = bio;
@@ -26,6 +28,7 @@ public class FounderProfile {
         this.skills = skills;
         this.industry = industry;
         this.country = country;
+        this.startupStage = startupStage;
     }
 
     public Long getUserId() {
@@ -68,6 +71,10 @@ public class FounderProfile {
     public String getCountry() {
 
         return country;
+    }
+
+    public String getStartupStage() {
+        return startupStage;
     }
 }
 
