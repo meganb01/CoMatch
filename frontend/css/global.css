@@ -404,3 +404,78 @@ button,
   color: #3b82f6;
   cursor: pointer;
 }
+
+/* ===== MESSAGING PAGE ===== */
+
+.chat-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+/* Messages area */
+#messagesList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Individual messages */
+.my-message,
+.their-message {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Sender messages */
+.my-message {
+  align-self: flex-end;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+
+/* Other user's messages */
+.their-message {
+  align-self: flex-start;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
+/* Input area */
+.message-input {
+  display: flex;
+  gap: 10px;
+}
+
+/* Input field */
+#messageInput {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  outline: none;
+}
+
+/* Button */
+#sendBtn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
+  border: none;
+  cursor: pointer;
+}
