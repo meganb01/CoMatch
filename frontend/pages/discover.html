@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Discover Founders</title>
+        <link rel="stylesheet" href="../css/global.css">
+    </head>
+    <body>
+        <div class="discover-container">
+            <div class="discover-card" id="discoverCard">
+                <img id="founderAvatar" src="" alt="Founder Avatar">
+                <h2 id="founderName"></h2>
+                <p id="founderSector"></p>
+                <div id="founderSkills" class="skills"></div>
+                <p id="founderBio"></p>
+
+                <div class="actions">
+                    <button id="passBtn">Pass</button>
+                    <button id="likeBtn">Like</button>
+                </div>
+            </div>
+
+            <p id="noMoreProfiles" style="display:none;">No more profiles available.</p>
+        </div>
+
+        <!-- Match Modal -->
+        <div id="matchModal" style="display:none;">
+            <div class="modal-content">
+                <h3>It's a Match!</h3>
+                <img id="matchAvatar" src="" alt="Matched Founder">
+                <p id="matchName"></p>
+                <button id="closeModalBtn">Close</button>
+            </div>
+        </div>
+
+        <script src="../js/discover.js"></script>
+    </body>
+</html>
