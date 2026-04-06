@@ -1,3 +1,19 @@
+-- ============================================================
+-- DATABASE: CO_MATCH
+-- DESCRIPTION:
+-- A matchmaking platform database for founders to connect,
+-- swipe, match, communicate, and collaborate.
+--
+-- FEATURES:
+-- - User profiles with skills & sectors
+-- - Swipe & match system
+-- - Filtering (country, sector, skill)
+-- - Safety features (block/report)
+-- - Video call support
+--
+-- AUTHOR: Team 04
+-- ============================================================
+
 -- Create database if it does not already exist
 create database if not exists co_match;
 
@@ -150,8 +166,57 @@ create index idx_profile_stage on user_profile(startup_stage);
 -- Index for faster swipe lookups
 create index idx_swipes_swiper on swipes(swiper_id);
 
+-- Index for matches performance
+create index idx_matches_user1 on matches(user1_id);
+create index idx_matches_user2 on matches(user2_id);
 
--- Testing data section
+-- SPRINT 3: SAFETY FEATURES (FR-021)
+-- Allows users to block or report inappropriate users
+create table blocked_users (
+    id int auto_increment primary key,
+    blocker_id int not null,
+    blocked_id int not null,
+    blocked_at timestamp default current_timestamp,
+
+    unique (blocker_id, blocked_id),
+
+    foreign key (blocker_id) references users(user_id) on delete cascade,
+    foreign key (blocked_id) references users(user_id) on delete cascade
+);
+create table reports (
+    id int auto_increment primary key,
+    reporter_id int not null,
+    reported_id int not null,
+    reason varchar(255) not null,
+    reported_at timestamp default current_timestamp,
+
+    foreign key (reporter_id) references users(user_id) on delete cascade,
+    foreign key (reported_id) references users(user_id) on delete cascade
+);
+create index idx_blocked_blocker on blocked_users(blocker_id);
+create index idx_reports_reporter on reports(reporter_id);
+
+-- VIDEO CALLS TABLE (FR-023)
+-- Stores call sessions between matched users
+-- Ensures calls only occur between valid matches
+create table video_calls (
+    id int auto_increment primary key,
+    caller_id int not null,
+    receiver_id int not null,
+    match_id int not null,
+    status enum('pending','active','ended','missed') default 'pending',
+    started_at timestamp null,
+    ended_at timestamp null,
+
+    foreign key (caller_id) references users(user_id) on delete cascade,
+    foreign key (receiver_id) references users(user_id) on delete cascade,
+    foreign key (match_id) references matches(id) on delete cascade
+);
+
+create index idx_calls_caller on video_calls(caller_id);
+create index idx_calls_receiver on video_calls(receiver_id);
+
+-- Testing data section 
 
 -- Insert a test user
 insert into users (email, password_hash)
@@ -179,6 +244,7 @@ select * from user_sectors;
 
 -- profile fetch query
 -- Used to retrieve full profile with skills & sectors
+-- Uses GROUP_CONCAT for aggregation
 select
     u.user_id,
     u.email,
@@ -253,21 +319,32 @@ insert into swipes (swiper_id, swiped_id, swipe_type) values (4, 1, 'LIKE');
 insert into matches (user1_id, user2_id) values (1, 2); -- Mridhula & Sarah
 insert into matches (user1_id, user2_id) values (1, 4); -- Mridhula & Alex
 
--- DELIMTER
+
+-- DELIMITER
 -- STEP 1: Change delimiter to // (so semicolons inside procedure don't end the command)
 delimiter //
+-- Drop old version so we can replace it
+-- STORED PROCEDURES (SPRINT 2 + 3)
+-- Handles matching, filtering, blocking, and reporting
+-- GetNextProfile (with filters + block logic)
+drop procedure if exists GetNextProfile //
 
--- STEP 2: Create first procedure
+-- GetNextProfile
+-- Returns next available profile for swiping
+-- Applies filters: Country (FR-014), Sector (FR-015), Skill (FR-016)
+-- Also excludes: Already swiped users, Matched users, Blocked users
 create procedure GetNextProfile(
     in current_user_id int,
-    in filter_country varchar(100)
+    in filter_country varchar(100),
+    in filter_sector varchar(100),
+    in filter_skill varchar(100)
 )
 begin
-    select 
+    select
         u.user_id,
         p.full_name,
         p.bio,
-        p.photo_url,
+        ifnull(p.photo_url, '') as photo_url,
         p.location,
         p.startup_stage,
         group_concat(distinct s.skill_name) as skills,
@@ -279,17 +356,44 @@ begin
     left join user_sectors usec on u.user_id = usec.user_id
     left join sectors sec on usec.sector_id = sec.id
     where u.user_id != current_user_id
-    and u.user_id not in (select swiped_id from swipes where swiper_id = current_user_id)
+
+    and u.user_id not in (
+        select swiped_id from swipes where swiper_id = current_user_id
+    )
+
     and u.user_id not in (
         select user2_id from matches where user1_id = current_user_id
         union
         select user1_id from matches where user2_id = current_user_id
     )
+
+    and u.user_id not in (
+        select blocked_id from blocked_users where blocker_id = current_user_id
+    )
+
     and (filter_country is null or p.location = filter_country)
-    group by u.user_id
+
+    and (filter_sector is null or u.user_id in (
+        select us2.user_id from user_sectors us2
+        join sectors sec2 on us2.sector_id = sec2.id
+        where sec2.sector_name = filter_sector
+    ))
+
+    and (filter_skill is null or u.user_id in (
+        select usk2.user_id from user_skills usk2
+        join skills sk2 on usk2.skill_id = sk2.id
+        where sk2.skill_name = filter_skill
+    ))
+
+    group by u.user_id, p.full_name, p.bio, p.photo_url, p.location, p.startup_stage
     limit 1;
 end //
--- STEP 3: Create second procedure
+
+-- RecordSwipe (match logic)
+-- Records swipe action and checks for mutual LIKE
+-- Automatically creates a match if both users LIKE each other
+drop procedure if exists RecordSwipe //
+
 create procedure RecordSwipe(
     in swiper int,
     in swiped int,
@@ -298,17 +402,23 @@ create procedure RecordSwipe(
 begin
     insert into swipes (swiper_id, swiped_id, swipe_type, created_at)
     values (swiper, swiped, action_type, now());
-    
+
     if action_type = 'LIKE' then
         if exists (
             select 1 from swipes 
-            where swiper_id = swiped and swiped_id = swiper and swipe_type = 'LIKE'
+            where swiper_id = swiped 
+            and swiped_id = swiper 
+            and swipe_type = 'LIKE'
         ) then
+
             if swiper < swiped then
-                insert into matches (user1_id, user2_id) values (swiper, swiped);
+                insert ignore into matches (user1_id, user2_id)
+                values (swiper, swiped);
             else
-                insert into matches (user1_id, user2_id) values (swiped, swiper);
-			end if;
+                insert ignore into matches (user1_id, user2_id)
+                values (swiped, swiper);
+            end if;
+
             select 1 as is_match;
         else
             select 0 as is_match;
@@ -318,15 +428,21 @@ begin
     end if;
 end //
 
--- STEP 4: Create third procedure
+-- GetMyMatches
+-- Retrieves all matches for a user with profile details
+drop procedure if exists GetMyMatches //
+
 create procedure GetMyMatches(
     in my_user_id int
 )
 begin
     select 
         m.id as match_id,
-        case when m.user1_id = my_user_id then m.user2_id else m.user1_id end as matched_user_id,
-		p.full_name,
+        case 
+            when m.user1_id = my_user_id then m.user2_id 
+            else m.user1_id 
+        end as matched_user_id,
+        p.full_name,
         p.photo_url,
         p.bio,
         p.location,
@@ -334,17 +450,53 @@ begin
         group_concat(distinct s.skill_name) as skills,
         m.matched_at
     from matches m
-    join user_profile p on p.user_id = case when m.user1_id = my_user_id then m.user2_id else m.user1_id end
+    join user_profile p 
+        on p.user_id = case 
+            when m.user1_id = my_user_id then m.user2_id 
+            else m.user1_id 
+        end
     left join user_skills us on p.user_id = us.user_id
     left join skills s on us.skill_id = s.id
     where my_user_id in (m.user1_id, m.user2_id)
     group by m.id, p.user_id;
 end //
 
+-- BlockUser (FR-021)
+-- Blocks a user and removes any existing match
+drop procedure if exists BlockUser //
+
+create procedure BlockUser(
+    in blocker int,
+    in blocked int
+)
+begin
+    insert ignore into blocked_users (blocker_id, blocked_id)
+    values (blocker, blocked);
+
+    delete from matches
+    where (user1_id = blocker and user2_id = blocked)
+       or (user1_id = blocked and user2_id = blocker);
+end //
+
+-- ReportUser (FR-021)
+-- Allows users to report inappropriate behavior
+drop procedure if exists ReportUser //
+
+create procedure ReportUser(
+    in reporter int,
+    in reported int,
+    in report_reason varchar(255)
+)
+begin
+    insert into reports (reporter_id, reported_id, reason)
+    values (reporter, reported, report_reason);
+end //
+
 delimiter ;
 
 -- TEST QUERIES
-call GetNextProfile(1, null);  -- Get profile to swipe
+-- Used to validate stored procedures
+call GetNextProfile(1, null, null, null);  -- Get profile to swipe
 call RecordSwipe(1, 5, 'LIKE'); -- Returns 1 if match, 0 if not
 call RecordSwipe(5, 1, 'LIKE'); -- Returns 1 if match, 0 if not
 call GetMyMatches(1);           -- List all matches
@@ -360,6 +512,7 @@ and user_id not in (
 );
 
 -- DATABASE USER FOR BACKEND CONNECTION
+-- Provides backend access to the database
 
 -- Create backend database user if not already existing
 create user if not exists 'team04_db'@'localhost' -- username & host
@@ -372,7 +525,7 @@ to 'team04_db'@'localhost';
 -- Reload privilege tables
 flush privileges;
 
--- Show granted permissions0
+-- Show granted permissions
 show grants for 'team04_db'@'localhost';
 
 
