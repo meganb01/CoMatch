@@ -30,9 +30,10 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         if(response.ok){
             console.log("Logged in:", data);
-            //Save userId and email for session
+            //Save userId, email, and token for API calls
             sessionStorage.setItem("userId", data.userId);
-            sessionStorage.setItem("email", data.email);  
+            sessionStorage.setItem("email", data.email);
+            if (data.token) localStorage.setItem("cm_token", data.token);
             
             successDiv.textContent = "Login successful! Redirecting...";
             setTimeout(()=> {

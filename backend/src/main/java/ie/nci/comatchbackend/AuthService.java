@@ -1,6 +1,7 @@
 package ie.nci.comatchbackend;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,27 +15,45 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    public AuthService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthService(PasswordEncoder passwordEncoder, UserRepository userRepository,
+                       UserProfileRepository userProfileRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     /**
-     * Register: check duplicate email, hash password, save user, return response.
-     * Throws IllegalArgumentException if email already exists (GlobalExceptionHandler turns it into 400 JSON).
+     * Register: check duplicate email, hash password, save user, create profile with name from email, return response.
+     * Name is derived from email (part before @), e.g. test@test.in -> "test".
      */
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
-        // Never store plain password - always hash (BCrypt) before saving
         String hash = passwordEncoder.encode(request.getPassword());
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPasswordHash(hash);
         User saved = userRepository.save(user);
+
+        // Auto-create profile with name from email (part before @)
+        String nameFromEmail = extractNameFromEmail(request.getEmail());
+        UserProfile profile = new UserProfile();
+        profile.setUserId(saved.getUserId());
+        profile.setFullName(nameFromEmail);
+        userProfileRepository.save(profile);
+
         return new AuthResponse(saved.getUserId(), saved.getEmail());
+    }
+
+    /** Extract display name from email: test@test.in -> test */
+    private String extractNameFromEmail(String email) {
+        if (email == null || email.isBlank()) return "";
+        int at = email.indexOf('@');
+        return at > 0 ? email.substring(0, at).trim() : email.trim();
     }
 
     /**

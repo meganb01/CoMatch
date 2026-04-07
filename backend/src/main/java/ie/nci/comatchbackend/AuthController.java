@@ -1,5 +1,6 @@
 package ie.nci.comatchbackend;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,7 @@ public class AuthController {
      * We invalidate the token in SessionStore so it can no longer be used.
      */
     @PostMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> logout(@RequestHeader(name = "Authorization", required = false) String authorization) {
         String token = extractToken(authorization);
         if (token == null) {

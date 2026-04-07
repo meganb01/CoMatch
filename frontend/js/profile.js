@@ -1,8 +1,8 @@
 // profile.js (complete, merged)
-// Configure API 
-const API_BASE = ""; //  "http://localhost:8080"
-const PROFILE_GET = API_BASE ? API_BASE + "/api/profile/me" : "";
-const PROFILE_PUT = API_BASE ? API_BASE + "/api/profile" : "";
+// Configure API – must point to backend for profile/discover to work
+const API_BASE = "http://localhost:8080";
+const PROFILE_GET = API_BASE + "/api/profile/me";
+const PROFILE_POST = API_BASE + "/api/profile";
 const TOKEN_KEY = "cm_token"; // need change later
 
 // DOM elements (support both naming patterns you might have)
@@ -161,9 +161,11 @@ if (bioInput && bioCount) {
 // Populate both view and edit from a user object
 function populateFormAndView(u){
   const user = u || {};
+  const sector = user.sector || user.industry || "";
+  const avatarUrl = user.avatarUrl || user.profilePhotoUrl || "";
   if (nameInput) nameInput.value = user.name || "";
   if (countryInput) countryInput.value = user.country || "";
-  if (sectorInput) sectorInput.value = user.sector || "";
+  if (sectorInput) sectorInput.value = sector;
   if (bioInput) bioInput.value = user.bio || "";
   if (bioCount) bioCount.textContent = `${(bioInput && bioInput.value.length) || 0}/100`;
 
@@ -171,13 +173,13 @@ function populateFormAndView(u){
            (typeof user.skills === "string" ? user.skills.split(",").map(s => s.trim()).filter(Boolean) : []);
   if (skillsInput && skillsInput.value.trim() === "") skillsInput.value = skills.join(", ");
 
-  if (avatarPreview && user.avatarUrl) avatarPreview.src = user.avatarUrl;
-  if (viewAvatar && user.avatarUrl) viewAvatar.src = user.avatarUrl;
+  if (avatarPreview && avatarUrl) avatarPreview.src = avatarUrl;
+  if (viewAvatar && avatarUrl) viewAvatar.src = avatarUrl;
 
   // view side
   if (viewName) viewName.textContent = user.name || "No name";
   if (viewCountry) viewCountry.textContent = user.country || "";
-  if (viewSector) viewSector.textContent = user.sector || "";
+  if (viewSector) viewSector.textContent = sector;
   if (viewBio) viewBio.textContent = user.bio || "";
   renderSkillsEdit();
   renderSkillsView();
@@ -243,23 +245,25 @@ async function saveProfile(){
     avatarUrl: null
   };
 
-  // if avatarFile exists and API accepts multipart, send FormData; otherwise persist locally
   const token = localStorage.getItem(TOKEN_KEY);
-  if (API_BASE && token) {
-    // attempt multipart PUT
+  if (token) {
     try {
-      const form = new FormData();
-      form.append("name", payload.name);
-      form.append("country", payload.country);
-      form.append("sector", payload.sector);
-      form.append("bio", payload.bio);
-      form.append("skills", JSON.stringify(payload.skills));
-      if (avatarFile) form.append("avatar", avatarFile);
+      const body = {
+        name: payload.name,
+        country: payload.country,
+        industry: payload.sector,
+        bio: payload.bio,
+        skills: payload.skills,
+        profilePhotoUrl: (avatarPreview && avatarPreview.src) || null
+      };
 
-      const res = await fetch(PROFILE_PUT, {
-        method: "PUT",
-        headers: { "Authorization": "Bearer " + token },
-        body: form
+      const res = await fetch(PROFILE_POST, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
       });
 
       if (!res.ok) {
@@ -267,7 +271,6 @@ async function saveProfile(){
         return;
       }
       const data = await res.json();
-      // update view with response if provided
       populateFormAndView(data.user || data);
       showViewMode();
       alert("Profile saved.");
@@ -301,4 +304,12 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Logged out");
     window.location.href = "login.html";
   });
+
+  // ===== DISCOVER BUTTON =====
+  const discoverBtn = document.getElementById("discoverBtn");
+  if (discoverBtn) {
+    discoverBtn.addEventListener("click", () => {
+      window.location.href = "discover.html";
+    });
+  }
 });

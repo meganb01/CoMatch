@@ -32,8 +32,12 @@ public class FounderProfile {
         return userId;
     }
 
-    public String getName() {
+    /** Alias for frontend discover (expects profile.id). */
+    public Long getId() {
+        return userId;
+    }
 
+    public String getName() {
         return name;
     }
 
@@ -53,7 +57,11 @@ public class FounderProfile {
     }
 
     public String getIndustry() {
+        return industry;
+    }
 
+    /** Alias for frontend discover (expects profile.sector). */
+    public String getSector() {
         return industry;
     }
 

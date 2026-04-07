@@ -98,26 +98,30 @@ public class ProfileService {
         );
     }
 
-    /** Load profile for the given user; throws if profile not found. */
+    /** Load profile for the given user. Returns empty profile if none exists (new users can then create one). */
     @Transactional(readOnly = true)
     public FounderProfile getProfile(Long userId) {
-        UserProfile profile = userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Profile not found for user"));
+        return userProfileRepository.findByUserId(userId)
+                .map(this::toFounderProfile)
+                .orElse(new FounderProfile(userId, "", "", null, List.of(), "", ""));
+    }
 
+    /** Build FounderProfile from UserProfile (used by discover feed). */
+    @Transactional(readOnly = true)
+    public FounderProfile toFounderProfile(UserProfile profile) {
+        Long userId = profile.getUserId();
         List<String> skills = userSkillRepository.findByUserId(userId)
                 .stream()
                 .map(UserSkill::getSkillName)
                 .toList();
-
-        String selectedIndustry = Optional.ofNullable(profile.getIndustry()).orElse(null);
-
+        String industry = Optional.ofNullable(profile.getIndustry()).orElse(null);
         return new FounderProfile(
                 userId,
                 profile.getFullName(),
                 profile.getBio(),
                 profile.getProfilePhotoUrl(),
                 skills,
-                selectedIndustry,
+                industry,
                 profile.getCountry()
         );
     }

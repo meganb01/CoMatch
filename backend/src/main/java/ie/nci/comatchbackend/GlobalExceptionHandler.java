@@ -30,13 +30,19 @@ public class GlobalExceptionHandler {
 
     /**
      * Validation failures on @Valid request bodies (e.g. invalid email, password too short).
-     * Returns 400 with a map of field name to message, e.g. { "email": "...", "password": "..." }.
+     * Returns 400 with field errors and an "error" key so frontend can display it consistently.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> body = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(err ->
                 body.put(err.getField(), err.getDefaultMessage()));
+        // Frontend expects "error" for display; use first field message
+        String firstError = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation failed");
+        body.put("error", firstError);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 }
