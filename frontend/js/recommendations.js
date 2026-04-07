@@ -15,21 +15,29 @@ function getCurrentUser() {
 // AI scoring function: calculates compatibility between users
 function calculateScore(currentUser, otherUser) {
   let score = 0;
+  let reasons = [];
 
-  if (!currentUser || !otherUser) return 0;
+  if (!currentUser || !otherUser){
+  return{score: 0, reasons: [] };
+  }
 
   // Shared skills
   if (currentUser.skills && otherUser.skills) {
     const commonSkills = currentUser.skills.filter(skill =>
       otherUser.skills.includes(skill)
     );
-    score += commonSkills.length * 20;
+
+    if(commonSkills.length > 0){
+      score += commonSkills.length * 20;
+      reasons.push(`${commonSkills.length} shared skill(s)`);
+    }
   }
 
   // Bonus if users are in same sector
   if (currentUser.sector && otherUser.sector) {
     if (currentUser.sector === otherUser.sector) {
       score += 30;
+      reasons.push("Same sector");
     }
   }
 
@@ -37,11 +45,15 @@ function calculateScore(currentUser, otherUser) {
   if (currentUser.location && otherUser.location) {
     if (currentUser.location === otherUser.location) {
       score += 10;
+      reasons.push("Same location");
     }
   }
 
   //Cap score at 100
-  return Math.min(score, 100);
+  return{
+    score: Math.min(score, 100),
+    reasons
+  };
 }
 
 // Fetch users and generate AI-ranked recommendations
@@ -68,10 +80,14 @@ async function loadRecommendations() {
     const users = await res.json();
 
     // Apply AI scoring to each user
-    const scoredUsers = users.map(user => ({
-      ...user,
-      score: calculateScore(currentUser, user)
-    }));
+    const scoredUsers = users.map(user => {
+      const result = calculateScore(currentUser, user);
+      return{
+        ...user,
+        score: result.score,
+        reasons: result.reasons
+      };
+    });
 
     // Sort users by best match (highest score first)
     scoredUsers.sort((a, b) => b.score - a.score);
@@ -102,6 +118,7 @@ function displayRecommendations(users) {
       <h3>${user.name || "No name"}</h3>
       <p>${user.sector || ""}</p>
       <p>Match Score: ${user.score}%</p>
+      <p class="muted">${user.reasons.join(" • ")}</p>
     `;
 
     container.appendChild(div);
