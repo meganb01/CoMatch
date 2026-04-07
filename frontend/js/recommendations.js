@@ -5,10 +5,15 @@ const container = document.getElementById("recommendationsList");
 
 //Get current user data (used for AI matching)
 function getCurrentUser() {
+  const data = localStorage.getItem("mock_profile");
+  if (!data) return null;
+
+  const user = JSON.parse(data);
+
   return {
-    skills: JSON.parse(localStorage.getItem("skills")) || [],
-    sector: localStorage.getItem("sector") || "",
-    location: localStorage.getItem("country") || ""
+    skills: user.skills || [],
+    sector: user.sector || "",
+    location: user.country || ""
   };
 }
 
@@ -120,6 +125,12 @@ function displayRecommendations(users) {
       <p>Match Score: ${user.score}%</p>
       <p class="muted">${user.reasons.join(" • ")}</p>
     `;
+
+    //Make clickable (goes to discover page)
+  div.style.cursor = "pointer";
+  div.addEventListener("click", () => {
+    window.location.href = `discover.html?focusUserId=${user.id}`;
+  });
 
     container.appendChild(div);
   });
