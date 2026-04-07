@@ -20,11 +20,11 @@ public class DiscoverService {
 
     private static final List<FounderProfile> DEMO_PROFILES = List.of(
             new FounderProfile(-1L, "Alex Chen", "Looking for a technical co-founder.",
-                    "https://i.pravatar.cc/150?img=12", List.of("Product Management", "Marketing"), "Tech, AI", "Ireland"),
+                    "https://i.pravatar.cc/150?img=12", List.of("Product Management", "Marketing"), "Tech, AI", "Ireland", "IDEA"),
             new FounderProfile(-2L, "Sarah Murphy", "Experienced in fintech. Seeking a product-minded co-founder.",
-                    "https://i.pravatar.cc/150?img=5", List.of("Finance", "Compliance"), "FinTech", "Ireland"),
+                    "https://i.pravatar.cc/150?img=5", List.of("Finance", "Compliance"), "FinTech", "Ireland", "MVP"),
             new FounderProfile(-3L, "James O'Brien", "Full-stack developer looking for a business partner.",
-                    "https://i.pravatar.cc/150?img=8", List.of("Development", "Design"), "HealthTech", "Ireland")
+                    "https://i.pravatar.cc/150?img=8", List.of("Development", "Design"), "HealthTech", "Ireland", "FUNDED")
     );
 
     private final UserProfileRepository userProfileRepository;

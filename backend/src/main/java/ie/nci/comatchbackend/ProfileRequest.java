@@ -30,6 +30,12 @@ public class ProfileRequest {
     /** Country or location. */
     private String country;
 
+    /**
+     * FR-009: startup stage. Allowed values (case-insensitive): IDEA, MVP, FUNDED.
+     * Omit or leave blank to clear.
+     */
+    private String startupStage;
+
     public String getName() {
 
         return name;
@@ -88,6 +94,14 @@ public class ProfileRequest {
     public void setCountry(String country) {
 
         this.country = country;
+    }
+
+    public String getStartupStage() {
+        return startupStage;
+    }
+
+    public void setStartupStage(String startupStage) {
+        this.startupStage = startupStage;
     }
 }
 

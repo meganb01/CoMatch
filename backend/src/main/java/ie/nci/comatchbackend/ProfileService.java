@@ -57,6 +57,7 @@ public class ProfileService {
         profile.setProfilePhotoUrl(request.getProfilePhotoUrl());
         profile.setIndustry(request.getIndustry());
         profile.setCountry(request.getCountry());
+        profile.setStartupStage(normalizeStartupStage(request.getStartupStage()));
         userProfileRepository.save(profile);
 
         // Replace skills: delete existing, then insert from request
@@ -94,7 +95,8 @@ public class ProfileService {
                 profile.getProfilePhotoUrl(),
                 savedSkills,
                 selectedIndustry,
-                profile.getCountry()
+                profile.getCountry(),
+                profile.getStartupStage()
         );
     }
 
@@ -103,7 +105,7 @@ public class ProfileService {
     public FounderProfile getProfile(Long userId) {
         return userProfileRepository.findByUserId(userId)
                 .map(this::toFounderProfile)
-                .orElse(new FounderProfile(userId, "", "", null, List.of(), "", ""));
+                .orElse(new FounderProfile(userId, "", "", null, List.of(), "", "", null));
     }
 
     /** Build FounderProfile from UserProfile (used by discover feed). */
@@ -122,8 +124,21 @@ public class ProfileService {
                 profile.getProfilePhotoUrl(),
                 skills,
                 industry,
-                profile.getCountry()
+                profile.getCountry(),
+                profile.getStartupStage()
         );
+    }
+
+    /** FR-009: null or blank clears; otherwise must be IDEA, MVP, or FUNDED (case-insensitive). */
+    private static String normalizeStartupStage(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        String u = raw.trim().toUpperCase();
+        if (!("IDEA".equals(u) || "MVP".equals(u) || "FUNDED".equals(u))) {
+            throw new IllegalArgumentException("startupStage must be one of: IDEA, MVP, FUNDED");
+        }
+        return u;
     }
 }
 

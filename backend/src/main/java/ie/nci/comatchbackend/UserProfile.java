@@ -33,6 +33,10 @@ public class UserProfile {
     @Column(name = "country")
     private String country;
 
+    /** FR-009: idea / MVP / funded — stored as IDEA, MVP, or FUNDED (nullable). */
+    @Column(name = "startup_stage", length = 20)
+    private String startupStage;
+
     public Long getUserId() {
         return userId;
     }
@@ -79,6 +83,14 @@ public class UserProfile {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getStartupStage() {
+        return startupStage;
+    }
+
+    public void setStartupStage(String startupStage) {
+        this.startupStage = startupStage;
     }
 }
 
