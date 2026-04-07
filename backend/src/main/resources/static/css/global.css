@@ -1,0 +1,648 @@
+:root{
+  --bg: #07112a;
+  --panel: #0f1a36;
+  --accent: #6b4bff;
+  --accent-2: #2a7cff;
+  --text: #e8eef9;
+  --muted: #9aa7c7;
+  --radius: 12px;
+}
+
+*{box-sizing:border-box}
+
+/* Body base styles */
+body{
+  margin: 0;
+  font-family: Inter, Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg), #041021);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Wrapper for auth & skills pages */
+.auth-wrapper{
+  min-height: 100vh;            
+  display: flex;
+  align-items: center;          
+  justify-content: center;     
+  background-color: var(--bg);  
+  padding: 20px;
+}
+
+.register-container,
+.login-container,
+.skills-container{
+  background: var(--panel);
+ 
+  padding: 40px;                
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 95%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Landing page (home): Login / Register options */
+.landing-card {
+  background: var(--panel);
+  padding: 48px;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 95%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  text-align: center;
+}
+.landing-card h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+.landing-card .landing-tagline {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.landing-card .landing-desc {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+.landing-card p {
+  color: var(--muted);
+  margin: 0;
+}
+.landing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.landing-actions a {
+  display: block;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+.landing-actions a:hover {
+  opacity: 0.9;
+}
+.landing-actions .btn-login {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+.landing-actions .btn-register {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.register-container input,
+.register-container textarea,
+.register-container select,
+.login-container input,
+.login-container textarea,
+.login-container select,
+.skills-container input,
+.skills-container textarea,
+.skills-container select{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.register-container input:focus,
+.register-container textarea:focus,
+.register-container select:focus,
+.login-container input:focus,
+.login-container textarea:focus,
+.login-container select:focus,
+.skills-container input:focus,
+.skills-container textarea:focus,
+.skills-container select:focus{
+  border-color: var(--accent);
+}
+
+/*Profile page styling */
+.profile-page{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+}
+
+.profile-card{
+  width:100%;
+  max-width:760px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+  border-radius: var(--radius);
+  padding:18px;
+  border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.title{
+  margin:0 0 12px 0;
+  font-size:1.15rem;
+}
+
+/* Photo Row */
+.photo-row{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.avatar-wrap{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg,#0b1230,#081028);
+}
+.avatar{ width:100%; height:100%; object-fit:cover; display:block; }
+.upload-btn{
+  display:inline-block;
+  padding:8px 14px;
+  background: linear-gradient(90deg,var(--accent), var(--accent-2));
+  color:#fff;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.muted{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+/* Form */
+.profile-form{ display:flex; flex-direction:column; gap:12px; margin-top:6px; }
+.form-label{ display:block; font-size:13px; color:var(--muted); }
+.form-label input[type="text"],
+.form-label select,
+.form-label textarea,
+#skillInput {
+  margin-top:6px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color:var(--text);
+  outline:none;
+  font-size:14px;
+}
+
+textarea { min-height:100px; resize:vertical; }
+
+/* Skills tags */
+.tag {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  padding:6px 10px;
+  border-radius:18px;
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  color:var(--text);
+  font-size:13px;
+}
+.tag button{ background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:0; }
+
+/* Skills list container */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;   
+  gap: 12px;             
+  margin-top: 12px;
+}
+
+/* Individual skill tag*/
+.skills-list .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* Hide the default checkbox */
+.skills-list .tag input[type="checkbox"] {
+  display: none;
+}
+
+.skills-list .tag:hover {
+  background: rgba(91,124,250,0.1);
+  border-color: var(--accent);
+}
+
+/* Checked/selected state */
+.skills-list .tag input[type="checkbox"]:checked + span {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+
+/* Make the span fill the tag area for consistent spacing */
+.skills-list .tag span {
+  display: inline-block;
+  pointer-events: none; 
+}
+
+@media (max-width: 640px) {
+  .skills-list {
+    justify-content: center; 
+  }
+  .skills-list .tag {
+    flex: 1 1 calc(50% - 12px); 
+    max-width: calc(50% - 12px);
+  }
+}
+
+/* Actions */
+.form-actions{ display:flex; gap:10px; margin-top:6px; }
+.btn{ padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn-primary{ background: linear-gradient(90deg,var(--accent), var(--accent-2)); color:#fff;}
+.btn-ghost{ background: rgba(255,255,255,0.02); color:var(--muted);}
+
+/* Message */
+#message{ margin-top:8px; font-size:14px; color:var(--muted); }
+
+/* responsive */
+@media (max-width:640px){
+  .photo-row{ flex-direction:row; gap:12px; align-items:flex-start; }
+  .profile-card{ padding:14px; }
+}
+
+.hidden {
+  display: none;
+}
+
+button,
+.primary-btn {
+  background: #5b7cfa;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.profile-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.profile-actions .primary-btn{width:100%;margin-top:0;padding:12px 18px;font-size:14px;font-weight:600}
+.logout-btn{display:block;width:100%;margin-top:14px;padding:12px 18px;background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;text-align:center;transition:all .2s}
+.logout-btn:hover{background:rgba(239,68,68,.25)}
+@media(max-width:500px){.profile-actions{grid-template-columns:1fr}}
+
+.secondary-btn {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.skills {
+  margin: 12px 0;
+}
+
+.skill {
+  display: inline-block;
+  background: #16224d;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Avatar size + circular */
+.avatar, #avatarPreview, #viewAvatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Edit mode card styling */
+#editMode {
+  background: #0e1629;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  animation: fadeIn 0.25s ease;
+}
+
+#editMode h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+  color: #ffffff;
+}
+
+#editMode label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #9fb2ff;
+}
+
+#editMode input,
+#editMode textarea,
+#editMode select {
+  width: 100%;
+  background: #101c3d;
+  border: 1px solid #1e2b5c;
+  color: white;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+#editMode input:focus,
+#editMode textarea:focus,
+#editMode select:focus {
+  border-color: #5b7cfa;
+}
+
+#editMode textarea {
+  resize: none;
+  min-height: 90px;
+}
+
+#editMode input + label,
+#editMode select + label {
+  margin-top: 18px;
+}
+
+#editMode .actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Smooth entry */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== LOGOUT (INSIDE CARD) =====
+   This styles both the element with id="logoutBtn" and elements
+   with class="logout-btn" so it works with either markup.
+*/
+.logout-btn,
+#logoutBtn {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid rgba(255,107,107,0.12);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.logout-btn:hover,
+#logoutBtn:hover {
+  background: rgba(255,107,107,0.06);
+}
+
+.avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.change-photo {
+  font-size: 14px;
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+/* ===== Discover / Swipe Page ===== */
+.discover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 24px;
+  padding: 20px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Individual profile card */
+.discover-card {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+
+/* Avatar in discover cards */
+.discover-card .discover-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  margin: 0 auto;
+}
+
+/* Name, sector, bio */
+.discover-card .discover-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.discover-card .discover-sector,
+.discover-card .discover-bio {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Skills in discover card */
+.discover-card .discover-skills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.discover-card .discover-skills .skill {
+  background: rgba(91,124,250,0.1);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+/* Action buttons: Like / Pass */
+.discover-card .actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.discover-card .like-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.discover-card .like-btn:hover {
+  opacity: 0.9;
+}
+
+.discover-card .pass-btn {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.discover-card .pass-btn:hover {
+  opacity: 0.9;
+}
+
+/* No more profiles message */
+.discover-empty {
+  font-size: 1rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 32px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .discover-card {
+    padding: 16px;
+  }
+  
+  .discover-card .discover-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .discover-card .like-btn,
+  .discover-card .pass-btn {
+    flex: 1;
+    padding: 10px 12px;
+  }
+}
+
+/* ===== Messages / Chat Page ===== */
+.messages-page{min-height:100vh;padding:24px;color:#e8eef9}
+.messages-card{max-width:1100px;margin:0 auto;background:rgba(15,26,54,.95);border:1px solid rgba(255,255,255,.04);border-radius:18px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.messages-header h1{margin:0;font-size:28px}
+.messages-header p{margin:6px 0 0;color:#9aa7c7}
+.messages-header-row{display:flex;justify-content:space-between;align-items:center}
+.messages-back{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.1);padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;margin:0;text-decoration:none}
+.messages-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;margin-top:20px}
+.chat-list,.chat-window{background:#0e1629;border:1px solid rgba(255,255,255,.03);border-radius:16px}
+.chat-list{padding:12px;overflow-y:auto;max-height:70vh}
+.chat-item{padding:14px;border-radius:12px;cursor:pointer;margin-bottom:10px;background:rgba(255,255,255,.02);transition:background .15s}
+.chat-item:hover{background:rgba(91,124,250,.08)}
+.chat-item.active{background:#16224d;border:1px solid rgba(91,124,250,.35)}
+.chat-item h3{margin:0;font-size:15px}
+.chat-item p{margin:6px 0 0;font-size:13px;color:#9aa7c7}
+.chat-window{display:flex;flex-direction:column;min-height:70vh}
+.chat-window-header{padding:16px;border-bottom:1px solid rgba(255,255,255,.04)}
+.chat-window-header h2{margin:0;font-size:18px}
+.chat-window-header p{margin:6px 0 0;color:#9aa7c7;font-size:13px}
+.chat-messages{flex:1;padding:16px;overflow-y:auto}
+.message-row{display:flex;margin-bottom:12px}
+.message-row.me{justify-content:flex-end}
+.message-bubble{max-width:70%;padding:12px 14px;border-radius:14px;font-size:14px;line-height:1.4}
+.message-row.me .message-bubble{background:#5b7cfa;color:#fff;border-bottom-right-radius:4px}
+.message-row.them .message-bubble{background:rgba(255,255,255,.04);color:#e8eef9;border-bottom-left-radius:4px}
+.message-meta{font-size:11px;color:#9aa7c7;margin-top:4px}
+.message-row.me .message-meta{text-align:right}
+.composer{display:flex;gap:10px;padding:16px;border-top:1px solid rgba(255,255,255,.04)}
+.composer input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.05);background:#101c3d;color:#e8eef9;outline:none;font-size:14px;margin:0}
+.composer input:focus{border-color:#5b7cfa}
+.composer .send-btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;padding:12px 20px;border-radius:12px;cursor:pointer;font-weight:700;margin:0}
+.no-matches-msg{text-align:center;color:#9aa7c7;padding:40px 20px;font-size:15px}
+@media(max-width:800px){.messages-layout{grid-template-columns:1fr}.chat-list{max-height:none}.chat-window{min-height:60vh}}
+
+/* ===== AI Recommendations Cards ===== */
+.rec-card{background:#0e1629;border:1px solid rgba(255,255,255,.03);border-radius:14px;padding:18px;margin-bottom:14px}
+.rec-header{display:flex;justify-content:space-between;align-items:center}
+.rec-header h3{margin:0;font-size:16px}
+.rec-score{padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.score-high{background:rgba(34,197,94,.15);color:#22c55e}
+.score-mid{background:rgba(234,179,8,.15);color:#eab308}
+.score-low{background:rgba(239,68,68,.15);color:#ef4444}
+.rec-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.rec-bio{color:#9aa7c7;font-size:14px;margin-top:8px}

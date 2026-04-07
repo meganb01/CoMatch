@@ -50,7 +50,11 @@ public class FounderProfile {
     }
 
     public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
 
+    /** Alias so frontend discover.js can use profile.avatarUrl */
+    public String getAvatarUrl() {
         return profilePhotoUrl;
     }
 

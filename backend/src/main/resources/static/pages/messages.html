@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages - CoMatch</title>
+  <link rel="stylesheet" href="../css/global.css" />
+</head>
+<body>
+
+  <div class="messages-page">
+    <div class="messages-card">
+      <div class="messages-header">
+        <div class="messages-header-row">
+          <div>
+            <h1>Messages</h1>
+            <p>Chat with your matches</p>
+          </div>
+          <a href="profile.html" class="messages-back">Back to Profile</a>
+        </div>
+      </div>
+
+      <div class="messages-layout">
+        <aside class="chat-list" id="chatList">
+          <p class="no-matches-msg">Loading matches...</p>
+        </aside>
+
+        <section class="chat-window">
+          <div class="chat-window-header">
+            <h2 id="chatName">Select a chat</h2>
+            <p id="chatStatus">Choose a match to start messaging</p>
+          </div>
+
+          <div class="chat-messages" id="chatMessages"></div>
+
+          <form class="composer" id="messageForm">
+            <input
+              type="text"
+              id="messageInput"
+              placeholder="Type a message..."
+              autocomplete="off"
+            />
+            <button type="submit" class="send-btn">Send</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/messages.js"></script>
+</body>
+</html>

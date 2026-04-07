@@ -18,15 +18,6 @@ public class DiscoverService {
     private static final String LIKE = "LIKE";
     private static final String PASS = "PASS";
 
-    private static final List<FounderProfile> DEMO_PROFILES = List.of(
-            new FounderProfile(-1L, "Alex Chen", "Looking for a technical co-founder.",
-                    "https://i.pravatar.cc/150?img=12", List.of("Product Management", "Marketing"), "Tech, AI", "Ireland", "IDEA"),
-            new FounderProfile(-2L, "Sarah Murphy", "Experienced in fintech. Seeking a product-minded co-founder.",
-                    "https://i.pravatar.cc/150?img=5", List.of("Finance", "Compliance"), "FinTech", "Ireland", "MVP"),
-            new FounderProfile(-3L, "James O'Brien", "Full-stack developer looking for a business partner.",
-                    "https://i.pravatar.cc/150?img=8", List.of("Development", "Design"), "HealthTech", "Ireland", "FUNDED")
-    );
-
     private final UserProfileRepository userProfileRepository;
     private final ProfileService profileService;
     private final SwipeRepository swipeRepository;
@@ -52,17 +43,13 @@ public class DiscoverService {
         String c = blankToNull(country);
         String i = blankToNull(industry);
         String s = blankToNull(skill);
-        boolean hasFilters = c != null || i != null || s != null;
 
         List<FounderProfile> real = userProfileRepository.findDiscoverable(currentUserId, c, i, s)
                 .stream()
                 .map(profileService::toFounderProfile)
                 .toList();
 
-        if (hasFilters) {
-            return real;
-        }
-        return real.isEmpty() ? DEMO_PROFILES : real.size() >= 3 ? real : concat(real, DEMO_PROFILES);
+        return real;
     }
 
     private static String blankToNull(String v) {
@@ -70,10 +57,6 @@ public class DiscoverService {
             return null;
         }
         return v.trim();
-    }
-
-    private List<FounderProfile> concat(List<FounderProfile> a, List<FounderProfile> b) {
-        return java.util.stream.Stream.concat(a.stream(), b.stream()).toList();
     }
 
     /**
@@ -87,9 +70,6 @@ public class DiscoverService {
         }
         if (currentUserId.equals(targetUserId)) {
             throw new IllegalArgumentException("Cannot swipe on yourself");
-        }
-        if (targetUserId < 0) {
-            return new SwipeResponse(false);
         }
 
         String swipeType = "like".equalsIgnoreCase(action != null ? action : "pass") ? LIKE : PASS;

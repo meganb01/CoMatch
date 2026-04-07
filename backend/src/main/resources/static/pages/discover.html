@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Founders - CoMatch</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+        .discover-page{min-height:100vh;display:flex;flex-direction:column}
+        .discover-topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.04)}
+        .discover-topbar h1{margin:0;font-size:20px}
+        .discover-topbar .nav-links{display:flex;gap:14px}
+        .discover-topbar .nav-links a{color:#9aa7c7;text-decoration:none;font-size:14px;font-weight:600;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.06);transition:all .2s}
+        .discover-topbar .nav-links a:hover{color:#fff;border-color:var(--accent)}
+        .discover-body{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+        .discover-card{background:var(--panel);border-radius:var(--radius);padding:32px;width:100%;max-width:400px;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:center}
+        .discover-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.06);margin-bottom:16px}
+        .discover-card h2{margin:0 0 6px;font-size:22px}
+        .discover-card .sector{color:#9aa7c7;font-size:14px;margin:0 0 12px}
+        .discover-card .skills{margin:12px 0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+        .discover-card .skills span{background:rgba(91,124,250,.12);color:#a4b8ff;padding:6px 14px;border-radius:20px;font-size:12px}
+        .discover-card .bio{color:#9aa7c7;font-size:14px;margin:12px 0 20px;line-height:1.5}
+        .swipe-buttons{display:flex;gap:14px;justify-content:center}
+        .swipe-buttons button{flex:1;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:700;transition:all .2s}
+        #passBtn{background:rgba(255,255,255,.06);color:#9aa7c7}
+        #passBtn:hover{background:rgba(255,255,255,.1)}
+        #likeBtn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+        #likeBtn:hover{opacity:.9}
+        #noMoreProfiles{text-align:center;color:#9aa7c7;font-size:16px}
+    </style>
+</head>
+<body>
+
+<div class="discover-page">
+    <div class="discover-topbar">
+        <h1>Discover Founders</h1>
+        <div class="nav-links">
+            <a href="profile.html">Profile</a>
+            <a href="messages.html">Messages</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </div>
+
+    <div class="discover-body">
+        <div class="discover-card" id="discoverCard">
+            <img id="founderAvatar" src="" alt="Founder Avatar">
+            <h2 id="founderName"></h2>
+            <p class="sector" id="founderSector"></p>
+            <div id="founderSkills" class="skills"></div>
+            <p class="bio" id="founderBio"></p>
+
+            <div class="swipe-buttons">
+                <button id="passBtn">Pass</button>
+                <button id="likeBtn">Like</button>
+            </div>
+        </div>
+
+        <p id="noMoreProfiles" style="display:none;">No more profiles available.</p>
+    </div>
+</div>
+
+<!-- Match Modal -->
+<div id="matchModal" style="display:none;">
+    <div class="modal-content">
+        <h3>It's a Match!</h3>
+        <img id="matchAvatar" src="" alt="Matched Founder">
+        <p id="matchName"></p>
+        <button id="sendMessageBtn" class="primary-btn">Send a Message</button>
+        <button id="closeModalBtn">Keep Swiping</button>
+    </div>
+</div>
+
+<script src="../js/discover.js"></script>
+</body>
+</html>

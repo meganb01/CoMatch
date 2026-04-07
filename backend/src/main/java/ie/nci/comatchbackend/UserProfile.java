@@ -24,7 +24,7 @@ public class UserProfile {
     @Column(name = "bio", length = 500)
     private String bio;
 
-    @Column(name = "profile_photo_url")
+    @Column(name = "profile_photo_url", columnDefinition = "CLOB")
     private String profilePhotoUrl;
 
     @Column(name = "industry")
