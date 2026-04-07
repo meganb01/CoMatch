@@ -4,6 +4,10 @@ const TOKEN_KEY = "cm_token";
 let profiles = []; // list of profiles from backend
 let currentIndex = 0;
 
+// Get focus user from URL (if coming from recommendations)
+const params = new URLSearchParams(window.location.search);
+const focusUserId = params.get("focusUserId");
+
 // DOM elements
 const discoverCard = document.getElementById("discoverCard");
 const founderAvatar = document.getElementById("founderAvatar");
@@ -61,6 +65,17 @@ async function loadProfiles() {
         });
         if (!res.ok) throw new Error("Failed to fetch profiles");
         profiles = await res.json();
+
+        // If coming from recommendations, move that user to the front
+        if (focusUserId) {
+            const index = profiles.findIndex(p => p.id == focusUserId);
+
+            if (index !== -1) {
+                const [focusedUser] = profiles.splice(index, 1);
+                profiles.unshift(focusedUser);
+            }
+        }
+        
         currentIndex = 0;
         renderProfile(profiles[currentIndex]);
     } catch (err) {
