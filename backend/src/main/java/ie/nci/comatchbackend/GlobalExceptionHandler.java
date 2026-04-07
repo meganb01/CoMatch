@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,13 @@ public class GlobalExceptionHandler {
      * Business rule violations (e.g. "Email already exists", "Invalid email or password",
      * "Invalid or missing auth token"). Returns 400 with body { "error": "message" }.
      */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatus(ResponseStatusException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getReason() != null ? ex.getReason() : "Request failed");
+        return ResponseEntity.status(ex.getStatusCode()).body(body);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleBadRequest(IllegalArgumentException ex) {
         Map<String, String> body = new HashMap<>();
