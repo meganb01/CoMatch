@@ -26,10 +26,13 @@
       Looking for a technical co-founder.
     </p>
 
-    <button id="editBtn" class="primary-btn">Edit Profile</button>
-    <button id="discoverBtn" class="primary-btn">Discover Founders</button>
-    <button onclick="window.location.href='recommendations.html'">Founder Recommendations</button>
-    <button id="logoutBtn">Logout</button>
+    <div class="profile-actions">
+      <button id="editBtn" class="primary-btn">Edit Profile</button>
+      <button id="discoverBtn" class="primary-btn">Discover Founders</button>
+      <button onclick="window.location.href='recommendations.html'" class="primary-btn">AI Recommendations</button>
+      <button onclick="window.location.href='messages.html'" class="primary-btn">Messages</button>
+    </div>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
 
   </section>
 
@@ -49,12 +52,53 @@
     <input id="nameInput" value="Alex Chen" />
 
     <label>Country</label>
-    <input id="countryInput" value="Ireland" />
+    <select id="countryInput">
+      <option value="">Select a country</option>
+      <option value="Ireland">Ireland</option>
+      <option value="United Kingdom">United Kingdom</option>
+      <option value="United States">United States</option>
+      <option value="Canada">Canada</option>
+      <option value="Australia">Australia</option>
+      <option value="Germany">Germany</option>
+      <option value="France">France</option>
+      <option value="Netherlands">Netherlands</option>
+      <option value="India">India</option>
+      <option value="Singapore">Singapore</option>
+      <option value="United Arab Emirates">United Arab Emirates</option>
+      <option value="Brazil">Brazil</option>
+      <option value="Japan">Japan</option>
+      <option value="South Korea">South Korea</option>
+      <option value="Spain">Spain</option>
+      <option value="Italy">Italy</option>
+      <option value="Sweden">Sweden</option>
+      <option value="Switzerland">Switzerland</option>
+      <option value="Portugal">Portugal</option>
+      <option value="Nigeria">Nigeria</option>
+    </select>
 
     <label>Sector</label>
-    <input id="sectorInput" value="Tech, AI" />
+    <select id="sectorInput">
+      <option value="">Select a sector</option>
+      <option value="Technology">Technology</option>
+      <option value="AI / Machine Learning">AI / Machine Learning</option>
+      <option value="FinTech">FinTech</option>
+      <option value="HealthTech">HealthTech</option>
+      <option value="EdTech">EdTech</option>
+      <option value="E-Commerce">E-Commerce</option>
+      <option value="SaaS">SaaS</option>
+      <option value="CleanTech">CleanTech</option>
+      <option value="AgriTech">AgriTech</option>
+      <option value="PropTech">PropTech</option>
+      <option value="Gaming">Gaming</option>
+      <option value="Media & Entertainment">Media & Entertainment</option>
+      <option value="Cybersecurity">Cybersecurity</option>
+      <option value="Logistics">Logistics</option>
+      <option value="FoodTech">FoodTech</option>
+      <option value="Social Impact">Social Impact</option>
+      <option value="Other">Other</option>
+    </select>
 
-    <label>Select Your Skills</label>
+    <label>Select Your Skills <span style="font-size:12px;color:#9aa7c7;font-weight:400;">(pick a sector first to see relevant skills)</span></label>
     <div id ="skillsContainer" class="skills-list">
       <!--tags rendered here by JS-->
     </div>

@@ -24,7 +24,7 @@ const viewBio = document.getElementById("viewBio");
 
 // Edit elements / form
 const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview") || document.getElementById("editAvatarPreview") || document.getElementById("editAvatar");
+const avatarPreview = document.getElementById("avatarPreview") || document.getElementById("editAvatarPreview");
 const nameInput = document.getElementById("nameInput");
 const countryInput = document.getElementById("countryInput");
 const sectorInput = document.getElementById("sectorInput");
@@ -51,25 +51,19 @@ function showViewMode(){
 }
 
 // Avatar preview handler
-let avatarBase64 = null;
-
 if (avatarInput) {
   avatarInput.addEventListener("change", (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    if (f.size > 2 * 1024 * 1024) {
-      alert("Image too large (max 2MB).");
+    if (f.size > 5 * 1024 * 1024) {
+      alert("Image too large (max 5MB).");
       avatarInput.value = "";
       return;
     }
     avatarFile = f;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      avatarBase64 = ev.target.result;
-      if (avatarPreview) avatarPreview.src = avatarBase64;
-      if (viewAvatar) viewAvatar.src = avatarBase64;
-    };
-    reader.readAsDataURL(f);
+    const url = URL.createObjectURL(f);
+    if (avatarPreview) avatarPreview.src = url;
+    if (viewAvatar) viewAvatar.src = url;
   });
 }
 
@@ -102,6 +96,26 @@ function addSkillFromInput(){
    renderSkillsEdit();
 }
 
+const SKILLS_BY_SECTOR = {
+  "Technology":           ["Software Development","Cloud Computing","DevOps","Cybersecurity","System Architecture","API Development","Mobile Development","QA Testing","Database Management","Blockchain"],
+  "AI / Machine Learning":["Machine Learning","Deep Learning","Data Science","NLP","Computer Vision","Data Engineering","Python","TensorFlow","Model Deployment","Analytics"],
+  "FinTech":              ["Financial Modelling","Blockchain","Payments","Regulatory Compliance","Risk Management","Investment Analysis","Trading Systems","KYC/AML","DeFi","Accounting"],
+  "HealthTech":           ["Clinical Research","Medical Devices","Health Data","Telemedicine","Regulatory Affairs","Biotech","Patient Experience","HIPAA Compliance","Genomics","Digital Health"],
+  "EdTech":               ["Curriculum Design","E-Learning","Learning Management","Gamification","Content Creation","Instructional Design","Student Engagement","EdTech Platforms","Tutoring","Assessment Design"],
+  "E-Commerce":           ["Supply Chain","Logistics","Digital Marketing","SEO","Product Listings","Customer Experience","Payments","Marketplace Strategy","Inventory Management","Conversion Optimisation"],
+  "SaaS":                 ["Product Management","Customer Success","Sales","Onboarding","Subscription Models","API Integration","Growth Hacking","SaaS Metrics","UI/UX","Technical Support"],
+  "CleanTech":            ["Renewable Energy","Carbon Accounting","Sustainability","Energy Storage","IoT","Environmental Policy","Green Finance","Climate Tech","Waste Management","Smart Grid"],
+  "AgriTech":             ["Precision Agriculture","IoT Sensors","Supply Chain","Food Safety","Crop Science","Drone Technology","Data Analytics","Irrigation Systems","Farm Management","Agri Finance"],
+  "PropTech":             ["Real Estate","Property Valuation","Smart Buildings","IoT","Facility Management","Construction Tech","Mortgage Tech","Property Management","GIS","BIM"],
+  "Gaming":               ["Game Design","Unity/Unreal","3D Modelling","Level Design","Game Monetisation","Multiplayer Systems","VR/AR","Sound Design","Narrative Design","QA Testing"],
+  "Media & Entertainment":["Content Creation","Video Production","Social Media","Storytelling","Brand Strategy","Influencer Marketing","Streaming","PR","Podcast","Photography"],
+  "Cybersecurity":        ["Penetration Testing","Network Security","Threat Analysis","Incident Response","Identity Management","Cloud Security","Compliance","SIEM","Ethical Hacking","Security Architecture"],
+  "Logistics":            ["Supply Chain","Fleet Management","Route Optimisation","Warehouse Management","Last-Mile Delivery","Freight","ERP Systems","Customs & Trade","Demand Forecasting","Cold Chain"],
+  "FoodTech":             ["Food Science","Nutrition","Supply Chain","Food Safety","R&D","Alternative Proteins","Packaging","Regulatory Affairs","Restaurant Tech","Consumer Research"],
+  "Social Impact":        ["Community Engagement","Grant Writing","Impact Measurement","NGO Management","Policy Advocacy","Fundraising","Volunteer Management","CSR","Social Enterprise","ESG"],
+  "Other":                ["Marketing","Sales","Finance","Design","Operations","Business Development","HR","Legal","Customer Support","Product Management"]
+};
+
 const ALL_SKILLS = [
   "Marketing","Development","Finance","Design","Sales",
   "Product Management","HR","Customer Support","Legal","Operations",
@@ -109,11 +123,18 @@ const ALL_SKILLS = [
   "UI/UX","Content Writing","SEO","Social Media","Analytics","Blockchain"
 ];
 
+function getSkillsForSector() {
+  const sector = sectorInput ? sectorInput.value : "";
+  return SKILLS_BY_SECTOR[sector] || ALL_SKILLS;
+}
+
 function renderSkillsEdit() {
   if (!skillsContainer) return;
   skillsContainer.innerHTML = "";
 
-  ALL_SKILLS.forEach(skill => {
+  const skillList = getSkillsForSector();
+
+  skillList.forEach(skill => {
     const label = document.createElement("label");
     label.className = "tag";
 
@@ -179,11 +200,8 @@ function populateFormAndView(u){
            (typeof user.skills === "string" ? user.skills.split(",").map(s => s.trim()).filter(Boolean) : []);
   if (skillsInput && skillsInput.value.trim() === "") skillsInput.value = skills.join(", ");
 
-  if (avatarUrl) {
-    avatarBase64 = avatarUrl;
-    if (avatarPreview) avatarPreview.src = avatarUrl;
-    if (viewAvatar) viewAvatar.src = avatarUrl;
-  }
+  if (avatarPreview && avatarUrl) avatarPreview.src = avatarUrl;
+  if (viewAvatar && avatarUrl) viewAvatar.src = avatarUrl;
 
   // view side
   if (viewName) viewName.textContent = user.name || "No name";
@@ -263,7 +281,7 @@ async function saveProfile(){
         industry: payload.sector,
         bio: payload.bio,
         skills: payload.skills,
-        profilePhotoUrl: avatarBase64 || (avatarPreview && avatarPreview.src) || null
+        profilePhotoUrl: (avatarPreview && avatarPreview.src) || null
       };
 
       const res = await fetch(PROFILE_POST, {
@@ -304,6 +322,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // load profile data to page
   loadProfile();
 
+  // Refresh skills when sector changes
+  if (sectorInput) {
+    sectorInput.addEventListener("change", () => {
+      skills = skills.filter(s => getSkillsForSector().includes(s));
+      renderSkillsEdit();
+      renderSkillsView();
+    });
+  }
+
   if (editBtn) editBtn.addEventListener("click", showEditMode);
   if (saveBtn) saveBtn.addEventListener("click", (e) => { e.preventDefault(); saveProfile(); });
   if (cancelBtn) cancelBtn.addEventListener("click", (e) => { e.preventDefault(); showViewMode(); loadProfile(); });
@@ -319,22 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (discoverBtn) {
     discoverBtn.addEventListener("click", () => {
       window.location.href = "discover.html";
-    });
-  }
-
-  // ===== MESSAGES BUTTON =====
-  const messagesBtn = document.getElementById("messagesBtn");
-  if (messagesBtn) {
-    messagesBtn.addEventListener("click", () => {
-      window.location.href = "messages.html";
-    });
-  }
-
-  // ===== AI RECOMMENDATIONS BUTTON =====
-  const recommendBtn = document.getElementById("recommendBtn");
-  if (recommendBtn) {
-    recommendBtn.addEventListener("click", () => {
-      window.location.href = "recommendations.html";
     });
   }
 });

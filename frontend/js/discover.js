@@ -36,15 +36,16 @@ function renderProfile(profile) {
     discoverCard.style.display = "block";
     noMoreProfiles.style.display = "none";
 
-    founderAvatar.src = profile.avatarUrl || "../images/default-avatar.png";
+    founderAvatar.src = profile.avatarUrl || profile.profilePhotoUrl || "../images/default-avatar.png";
     founderName.textContent = profile.name || "No name";
-    founderSector.textContent = profile.sector || "";
+    founderSector.textContent = profile.industry || profile.sector || "";
     founderBio.textContent = profile.bio || "";
 
     founderSkills.innerHTML = "";
     if (Array.isArray(profile.skills)) {
         profile.skills.forEach(skill => {
             const span = document.createElement("span");
+            span.className = "skill";
             span.textContent = skill;
             founderSkills.appendChild(span);
         });
@@ -68,7 +69,7 @@ async function loadProfiles() {
 
         // If coming from recommendations, move that user to the front
         if (focusUserId) {
-            const index = profiles.findIndex(p => p.id == focusUserId);
+            const index = profiles.findIndex(p => p.userId == focusUserId || p.id == focusUserId);
 
             if (index !== -1) {
                 const [focusedUser] = profiles.splice(index, 1);

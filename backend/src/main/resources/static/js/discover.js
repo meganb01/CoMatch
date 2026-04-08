@@ -4,6 +4,10 @@ const TOKEN_KEY = "cm_token";
 let profiles = []; // list of profiles from backend
 let currentIndex = 0;
 
+// Get focus user from URL (if coming from recommendations)
+const params = new URLSearchParams(window.location.search);
+const focusUserId = params.get("focusUserId");
+
 // DOM elements
 const discoverCard = document.getElementById("discoverCard");
 const founderAvatar = document.getElementById("founderAvatar");
@@ -32,15 +36,16 @@ function renderProfile(profile) {
     discoverCard.style.display = "block";
     noMoreProfiles.style.display = "none";
 
-    founderAvatar.src = profile.avatarUrl || "https://ui-avatars.com/api/?name=" + encodeURIComponent(profile.name || "U") + "&background=5b7cfa&color=fff&size=150";
+    founderAvatar.src = profile.avatarUrl || profile.profilePhotoUrl || "../images/default-avatar.png";
     founderName.textContent = profile.name || "No name";
-    founderSector.textContent = profile.sector || "";
+    founderSector.textContent = profile.industry || profile.sector || "";
     founderBio.textContent = profile.bio || "";
 
     founderSkills.innerHTML = "";
     if (Array.isArray(profile.skills)) {
         profile.skills.forEach(skill => {
             const span = document.createElement("span");
+            span.className = "skill";
             span.textContent = skill;
             founderSkills.appendChild(span);
         });
@@ -61,6 +66,17 @@ async function loadProfiles() {
         });
         if (!res.ok) throw new Error("Failed to fetch profiles");
         profiles = await res.json();
+
+        // If coming from recommendations, move that user to the front
+        if (focusUserId) {
+            const index = profiles.findIndex(p => p.userId == focusUserId || p.id == focusUserId);
+
+            if (index !== -1) {
+                const [focusedUser] = profiles.splice(index, 1);
+                profiles.unshift(focusedUser);
+            }
+        }
+        
         currentIndex = 0;
         renderProfile(profiles[currentIndex]);
     } catch (err) {
@@ -101,17 +117,13 @@ async function swipe(action) {
 }
 
 function showMatchModal(profile) {
-    matchAvatar.src = profile.avatarUrl || "https://ui-avatars.com/api/?name=" + encodeURIComponent(profile.name || "U") + "&background=5b7cfa&color=fff&size=150";
+    matchAvatar.src = profile.avatarUrl || "../images/default-avatar.png";
     matchName.textContent = profile.name || "";
     matchModal.style.display = "block";
 }
 
 closeModalBtn.addEventListener("click", () => {
     matchModal.style.display = "none";
-});
-
-document.getElementById("sendMessageBtn").addEventListener("click", () => {
-    window.location.href = "messages.html";
 });
 
 // Button events
