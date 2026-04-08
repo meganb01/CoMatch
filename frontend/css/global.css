@@ -605,3 +605,19 @@ button,
   border-radius: 50%;
   border: 2px solid #eee;
 }
+
+/* AI recommendations page */
+.recommendation-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.recommendation-card:active {
+  transform: scale(0.98);
+}

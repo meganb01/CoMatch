@@ -117,12 +117,20 @@ function displayRecommendations(users) {
 
   users.forEach(user => {
     const div = document.createElement("div");
-    div.classList.add("profile-card");
+    div.classList.add("profile-card", "recommendation-card");
 
     div.innerHTML =  `
       <h3>${user.name || "No name"}</h3>
       <p>${user.sector || ""}</p>
-      <p>Match Score: ${user.score}%</p>
+      <p class="match-score">
+      ${
+        user.score >= 60 ? "🔥 Strong Match" :
+        user.score >= 30 ? "👍 Good Match" :
+        user.score > 0 ? `Match Score: ${user.score}%` :
+        "Low Compatibility"
+      }
+      (${user.score}%)
+      </p>
       <p class="muted">${user.reasons.join(" • ")}</p>
     `;
 
