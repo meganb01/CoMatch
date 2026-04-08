@@ -595,3 +595,13 @@ button,
     padding: 10px 12px;
   }
 }
+
+/* Avatar image */
+#founderAvatar,
+#matchAvatar {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #eee;
+}

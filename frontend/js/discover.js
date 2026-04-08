@@ -36,7 +36,7 @@ function renderProfile(profile) {
     discoverCard.style.display = "block";
     noMoreProfiles.style.display = "none";
 
-    founderAvatar.src = profile.avatarUrl || "https://i.pravatar.cc/150";
+    founderAvatar.src = profile.avatarUrl || "../images/default-avatar.png";
     founderName.textContent = profile.name || "No name";
     founderSector.textContent = profile.sector || "";
     founderBio.textContent = profile.bio || "";
@@ -116,7 +116,7 @@ async function swipe(action) {
 }
 
 function showMatchModal(profile) {
-    matchAvatar.src = profile.avatarUrl || "";
+    matchAvatar.src = profile.avatarUrl || "../images/default-avatar.png";
     matchName.textContent = profile.name || "";
     matchModal.style.display = "block";
 }
