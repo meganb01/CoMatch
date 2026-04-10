@@ -214,17 +214,6 @@ function populateFormAndView(u){
 
 // Load profile: try token/backend or fallback to local mock
 async function loadProfile(){
-  // try localStorage saved profile first
-  const saved = localStorage.getItem("mock_profile");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      populateFormAndView(parsed);
-      return;
-    } catch(e) { /* ignore parse errors */ }
-  }
-
-  // If API configured and token exists, attempt fetch
   const token = localStorage.getItem(TOKEN_KEY);
   if (API_BASE && token) {
     try {
@@ -241,17 +230,6 @@ async function loadProfile(){
       console.warn("Profile fetch failed:", err);
     }
   }
-
-  // fallback mock
-  const mock = {
-    name: "Alex Chen",
-    country: "Ireland",
-    sector: "Tech, AI",
-    skills: ["Product Management", "Marketing"],
-    bio: "Looking for a technical co-founder.",
-    avatarUrl: "https://i.pravatar.cc/150?img=12"
-  };
-  populateFormAndView(mock);
 }
 
 // Save handler: update view and persist locally or send to API
@@ -311,7 +289,6 @@ async function saveProfile(){
   // Local save fallback
   // Use current avatarPreview src if file not uploaded to backend
   payload.avatarUrl = (avatarPreview && avatarPreview.src) || (viewAvatar && viewAvatar.src) || "";
-  localStorage.setItem("mock_profile", JSON.stringify(payload));
   populateFormAndView(payload);
   showViewMode();
   alert("Profile saved locally.");
