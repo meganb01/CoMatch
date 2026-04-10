@@ -196,26 +196,6 @@ create table reports (
 create index idx_blocked_blocker on blocked_users(blocker_id);
 create index idx_reports_reporter on reports(reporter_id);
 
--- VIDEO CALLS TABLE (FR-023)
--- Stores call sessions between matched users
--- Ensures calls only occur between valid matches
-create table video_calls (
-    id int auto_increment primary key,
-    caller_id int not null,
-    receiver_id int not null,
-    match_id int not null,
-    status enum('pending','active','ended','missed') default 'pending',
-    started_at timestamp null,
-    ended_at timestamp null,
-
-    foreign key (caller_id) references users(user_id) on delete cascade,
-    foreign key (receiver_id) references users(user_id) on delete cascade,
-    foreign key (match_id) references matches(id) on delete cascade
-);
-
-create index idx_calls_caller on video_calls(caller_id);
-create index idx_calls_receiver on video_calls(receiver_id);
-
 -- Testing data section 
 
 -- Insert a test user
