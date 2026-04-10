@@ -404,3 +404,31 @@ button,
   color: #3b82f6;
   cursor: pointer;
 }
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bell {
+  position: relative;
+  font-size: 22px;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 50%;
+}
+
+.notification-item {
+  background: #0e1629;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
