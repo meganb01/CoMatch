@@ -67,13 +67,24 @@ async function loadProfiles() {
         if (!res.ok) throw new Error("Failed to fetch profiles");
         profiles = await res.json();
 
-        // If coming from recommendations, move that user to the front
+        // If coming from recommendations, make sure that user shows first
         if (focusUserId) {
             const index = profiles.findIndex(p => p.userId == focusUserId || p.id == focusUserId);
 
             if (index !== -1) {
                 const [focusedUser] = profiles.splice(index, 1);
                 profiles.unshift(focusedUser);
+            } else {
+                // User was already swiped — fetch their profile directly
+                try {
+                    const pRes = await fetch(`${API_BASE}/api/profile/${focusUserId}`, {
+                        headers: { "Authorization": "Bearer " + token }
+                    });
+                    if (pRes.ok) {
+                        const focusedUser = await pRes.json();
+                        profiles.unshift(focusedUser);
+                    }
+                } catch (e) { /* ignore — just show normal discover */ }
             }
         }
         

@@ -14,6 +14,10 @@ function displayRecommendations(users) {
   users.forEach(user => {
     const card = document.createElement("div");
     card.classList.add("rec-card");
+    card.style.cursor = "pointer";
+    card.addEventListener("click", () => {
+      window.location.href = "discover.html?focusUserId=" + (user.userId || user.id);
+    });
 
     const scoreClass = user.score >= 70 ? "score-high" : user.score >= 40 ? "score-mid" : "score-low";
 
@@ -29,10 +33,6 @@ function displayRecommendations(users) {
       <p class="muted" style="margin:4px 0 8px;font-size:13px;">${escapeHtml(user.country || "")}${user.country && user.industry ? " · " : ""}${escapeHtml(user.industry || user.sector || "")}</p>
       <div class="rec-skills">${skillsHtml}</div>
       ${user.bio ? `<p class="rec-bio">${escapeHtml(user.bio)}</p>` : ""}
-      <button class="primary-btn" style="margin-top:12px;padding:8px 16px;font-size:13px;"
-        onclick="window.location.href='discover.html?focusUserId=${user.userId}'">
-        View Profile
-      </button>
     `;
 
     container.appendChild(card);

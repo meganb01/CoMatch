@@ -47,6 +47,17 @@ public class ProfileController {
         return ResponseEntity.ok(profile);
     }
 
+    /** Get any user's profile by userId (used by discover when coming from recommendations). */
+    @GetMapping("/{userId}")
+    public ResponseEntity<FounderProfile> getProfileById(
+            @RequestHeader(name = "Authorization", required = false) String authorization,
+            @PathVariable Long userId) {
+
+        requireAuthenticatedUser(authorization);
+        FounderProfile profile = profileService.getProfile(userId);
+        return ResponseEntity.ok(profile);
+    }
+
     /**
      * Resolves Authorisation header to a valid userId.
      * Throws if token is missing or invalid (GlobalExceptionHandler returns 400).
