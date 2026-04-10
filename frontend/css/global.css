@@ -611,20 +611,70 @@ button,
   border: 2px solid #eee;
 }
 
-/* AI recommendations page */
-.recommendation-card {
+/* AI recommendations page — cards use class rec-card (see recommendations.js) */
+.rec-card {
+  background: #0e1629;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  margin-bottom: 16px;
 }
 
-.recommendation-card:hover {
+.rec-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-.recommendation-card:active {
+.rec-card:active {
   transform: scale(0.98);
+}
+
+.rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rec-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.rec-score {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.score-high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.score-mid {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.score-low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.rec-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.rec-bio {
+  color: #9aa7c7;
+  font-size: 14px;
+  margin-top: 8px;
 }
 
 /* ===== Discover Nav Bar ===== */

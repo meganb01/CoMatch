@@ -637,7 +637,9 @@ button,
 @media(max-width:800px){.messages-layout{grid-template-columns:1fr}.chat-list{max-height:none}.chat-window{min-height:60vh}}
 
 /* ===== AI Recommendations Cards ===== */
-.rec-card{background:#0e1629;border:1px solid rgba(255,255,255,.03);border-radius:14px;padding:18px;margin-bottom:14px}
+.rec-card{background:#0e1629;border:1px solid rgba(255,255,255,.03);border-radius:14px;padding:18px;margin-bottom:14px;transition:transform .2s ease,box-shadow .2s ease;cursor:pointer}
+.rec-card:hover{transform:translateY(-5px);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.rec-card:active{transform:scale(.98)}
 .rec-header{display:flex;justify-content:space-between;align-items:center}
 .rec-header h3{margin:0;font-size:16px}
 .rec-score{padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700}
