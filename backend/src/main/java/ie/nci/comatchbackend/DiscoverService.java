@@ -1,16 +1,10 @@
 package ie.nci.comatchbackend;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-/**
- * DiscoverService: logic for the discover feed and swipe actions.
- * - getDiscoverableProfiles: returns other users' profiles (excluding current user).
- * - When no other users exist, returns demo profiles for development (matches profile.js mock).
- * - swipe: records like/pass (MVP: no persistence, returns match: false).
- */
 @Service
 public class DiscoverService {
 
@@ -25,32 +19,73 @@ public class DiscoverService {
 
     private final UserProfileRepository userProfileRepository;
     private final ProfileService profileService;
+    private final SwipeRepository swipeRepository;
+    private final MatchRepository matchRepository;
 
     public DiscoverService(UserProfileRepository userProfileRepository,
-                           ProfileService profileService) {
+                           ProfileService profileService,
+                           SwipeRepository swipeRepository,
+                           MatchRepository matchRepository) {
         this.userProfileRepository = userProfileRepository;
         this.profileService = profileService;
+        this.swipeRepository = swipeRepository;
+        this.matchRepository = matchRepository;
     }
 
-    /** Get discoverable profiles. Always appends demo profiles so there are at least 3 to swipe. */
     @Transactional(readOnly = true)
     public List<FounderProfile> getDiscoverableProfiles(Long currentUserId) {
         List<FounderProfile> real = userProfileRepository.findByUserIdNot(currentUserId)
                 .stream()
                 .map(profileService::toFounderProfile)
                 .toList();
-        return real.isEmpty() ? DEMO_PROFILES : real.size() >= 3 ? real : concat(real, DEMO_PROFILES);
+        List<FounderProfile> combined =
+            real.isEmpty() ? DEMO_PROFILES
+            : real.size() >= 3 ? real
+            : concat(real, DEMO_PROFILES);
+
+        return combined.stream()
+            .filter(profile -> !profile.getUserId().equals(currentUserId))
+            .toList();
     }
 
     private List<FounderProfile> concat(List<FounderProfile> a, List<FounderProfile> b) {
         return java.util.stream.Stream.concat(a.stream(), b.stream()).toList();
     }
 
-    /** Process a swipe (like or pass). MVP: always returns match=false. */
+    @Transactional
     public SwipeResponse swipe(Long currentUserId, Long targetUserId, String action) {
-        return new SwipeResponse(false);
+        // Normalise action to uppercase so "like"/"LIKE" both work
+        String normAction = action.toUpperCase();
+
+        // Persist or update the swipe row
+        Optional<Swipe> existing = swipeRepository.findBySwiperIdAndTargetId(currentUserId, targetUserId);
+        if (existing.isPresent()) {
+            existing.get().setAction(normAction);
+            swipeRepository.save(existing.get());
+        } else {
+            swipeRepository.save(new Swipe(currentUserId, targetUserId, normAction));
+        }
+
+        // Check for mutual match
+        boolean isMatch = false;
+        if ("LIKE".equals(normAction)) {
+            Optional<Swipe> reverse = swipeRepository
+                    .findBySwiperIdAndTargetId(targetUserId, currentUserId);
+            if (reverse.isPresent() && "LIKE".equals(reverse.get().getAction())) {
+                // Create match row only if one doesn't already exist
+                if (matchRepository.findByBothUsers(currentUserId, targetUserId).isEmpty()) {
+                    matchRepository.save(new Match(currentUserId, targetUserId));
+                }
+                isMatch = true;
+            }
+        } else if ("PASS".equals(normAction)) {
+            // Downgrade: remove existing match if present
+            matchRepository.findByBothUsers(currentUserId, targetUserId)
+                    .ifPresent(matchRepository::delete);
+        }
+
+        return new SwipeResponse(isMatch);
     }
 
-    /** Response DTO for swipe endpoint. */
     public record SwipeResponse(boolean match) {}
 }
